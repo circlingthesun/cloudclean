@@ -14,9 +14,9 @@
 
 ## BUILDING (Ubuntu 16.04)
  
-- ```git clone ```
+- ```git clone https://github.com/circlingthesun/cloudclean.git```
+- ```cd cloudclean```
 - ```git submodule init```
-- ```git submodule update```
 - ```git submodule update --init --recursive```
 - ```sudo add-apt-repository ppa:v-launchpad-jochen-sprickerhof-de/pcl -y```
 - ```sudo apt-get update -d```
