@@ -14,7 +14,7 @@
 
 ## BUILDING (Ubuntu 16.04)
 
-(Might need an older version of Eigen (<3.2.10) than is available in the ubuntu repository) 
+(Might need an older version of Eigen (<=3.2.10) than is available in the ubuntu repository) 
 
 - ```git clone https://github.com/circlingthesun/cloudclean.git```
 - ```cd cloudclean```
