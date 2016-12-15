@@ -20,7 +20,6 @@
 - ```cd cloudclean```
 - ```git submodule init```
 - ```git submodule update --init --recursive```
-- ```sudo add-apt-repository ppa:v-launchpad-jochen-sprickerhof-de/pcl -y```
 - ```sudo apt-get install gcc g++ libsvm-dev cmake libgomp1 libpng12-0 libqhull-dev libusb-1.0-0 libboost-all-dev qtbase5-dev mesa-common-dev libflann-dev libeigen3-dev```
 - ```wget http://public.jacklab.co.za/PCL-1.7.0-Linux.deb```
 - ```sudo dpkg -i PCL-1.7.0-Linux.deb```
