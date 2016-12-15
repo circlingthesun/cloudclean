@@ -13,14 +13,15 @@
 
 
 ## BUILDING (Ubuntu 16.04)
- 
+
+(Might need an older version of Eigen (<3.2.10) than is available in the ubuntu repository) 
+
 - ```git clone https://github.com/circlingthesun/cloudclean.git```
 - ```cd cloudclean```
 - ```git submodule init```
 - ```git submodule update --init --recursive```
 - ```sudo add-apt-repository ppa:v-launchpad-jochen-sprickerhof-de/pcl -y```
-- ```sudo apt-get update -d```
-- ```sudo apt-get install gcc g++ libsvm-dev libconfig++8-dev libblas-dev libatlas-base-dev liblapack-dev libgmm++-dev cmake libgomp1 libpng12-0 libqhull5 libusb-1.0-0 libboost1.53-all-dev nvidia-opencl-dev qtbase5-dev mesa-common-dev libflann-dev libeigen3-dev```
+- ```sudo apt-get install gcc g++ libsvm-dev cmake libgomp1 libpng12-0 libqhull-dev libusb-1.0-0 libboost-all-dev qtbase5-dev mesa-common-dev libflann-dev libeigen3-dev```
 - ```wget http://public.jacklab.co.za/PCL-1.7.0-Linux.deb```
 - ```sudo dpkg -i PCL-1.7.0-Linux.deb```
 - ```mkdir build && cd build```
