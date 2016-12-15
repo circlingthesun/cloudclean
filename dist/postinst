@@ -1,0 +1,28 @@
+#!/bin/sh
+FILES=/usr/lib/cloudclean/*.so.*
+
+for f in $FILES
+do
+  if [ -h $f ]; then
+  rm $f
+  echo "Symlink " $f "cleaned"
+  fi
+done
+
+echo "Creating symlinks"
+
+for f in $FILES
+do
+  if [ ! -f $f ]; then
+  	continue
+  fi
+  #echo "ln -s $f $SONAME"
+  SONAME=`readelf -d $f | grep -E "soname: \[.*\]$" | sed -r 's/(.* )\[(.*)\]$/\2/g'`
+  FULLSONAME=`dirname $f`/$SONAME
+  if [ -n "$SONAME" -a ! -f $FULLSONAME ]; then
+	ln -s $f $FULLSONAME
+	echo "Symlink $FULLSONAME created"
+  else
+  	echo "File $FULLSONAME exists"
+  fi
+done

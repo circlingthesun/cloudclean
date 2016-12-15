@@ -1,0 +1,12 @@
+#!/bin/sh
+FILES=/usr/lib/cloudclean/*.so.*
+
+echo "Deleting symlinks"
+
+for f in $FILES
+do
+  if [ -h $f ]; then
+	rm $f
+	echo "Symlink " $f "deleted"
+  fi
+done

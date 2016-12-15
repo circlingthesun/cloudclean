@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=0.1
+Name=CloudClean
+Name[en_GB]=CloudClean
+GenericName=Pointcloud processing
+GenericName[en_GB]=Pointcloud processing
+Comment=Edit pointclouds
+Type=Application
+Exec=cloudclean
+Icon=/usr/share/pixmaps/cloudclean.png
+Terminal=false
+Categories=Graphics;3DGraphics;Viewer;Qt;

@@ -1,0 +1,6 @@
+[submodule "thirdparty/EigenLibSVM"]
+	path = thirdparty/EigenLibSVM
+	url = https://github.com/circlingthesun/EigenLibSVM
+[submodule "thirdparty/omclboost"]
+	path = thirdparty/omclboost
+	url = https://github.com/circlingthesun/omclboost

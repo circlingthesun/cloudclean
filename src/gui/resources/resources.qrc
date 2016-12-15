@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>points.frag</file>
+        <file>points.vert</file>
+        <file>flatview.fs.glsl</file>
+        <file>flatview.gs.glsl</file>
+        <file>flatview.vs.glsl</file>
+        <file>basic.frag</file>
+        <file>basic.vert</file>
+        <file>eye_closed.png</file>
+        <file>eye_open.png</file>
+        <file>picking.frag</file>
+        <file>picking.vert</file>
+        <file>bg.vs.glsl</file>
+        <file>bg.fs.glsl</file>
+    </qresource>
+</RCC>

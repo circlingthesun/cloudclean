@@ -1,0 +1,15 @@
+In order to build the OMCLPBoost package, you need to install these libraries:
+
+* Eigen3: C++ template library for linear algebra
+  http://eigen.tuxfamily.org/index.php?title=Main_Page
+
+* CMake
+
+After installing the dependencies, run the following from the project root:
+
+mkdir build
+cd build
+cmake ..
+make
+
+This should build the "OMCLPBoost" binary.

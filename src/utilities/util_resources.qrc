@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>picking.frag</file>
+        <file>picking.vert</file>
+    </qresource>
+</RCC>

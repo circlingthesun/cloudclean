@@ -1,0 +1,324 @@
+# Rickert Mulder. Copyright (C) 2013. BSD.
+
+#
+# Project Properties
+#
+CMAKE_MINIMUM_REQUIRED (VERSION 2.8.6)
+PROJECT (cloudclean)
+
+if(((CMAKE_MAJOR_VERSION GREATER 1) AND (CMAKE_MINOR_VERSION GREATER 7)) AND (CMAKE_PATCH_VERSION GREATER 9))
+    cmake_policy(SET CMP0020 OLD)
+endif()
+
+ENABLE_TESTING()
+
+SET(APPLICATION_NAME "CloudClean")
+SET(APPLICATION_CODENAME "${PROJECT_NAME}")
+SET(APPLICATION_COPYRIGHT_YEARS "2013")
+SET(APPLICATION_VERSION_MAJOR 1)
+SET(APPLICATION_VERSION_MINOR 0)
+SET(APPLICATION_VERSION_PATCH 0)
+SET(APPLICATION_VERSION_TYPE SNAPSHOT)
+SET(APPLICATION_VERSION_STRING "${APPLICATION_VERSION_MAJOR}.${APPLICATION_VERSION_MINOR}.${APPLICATION_VERSION_PATCH}-${APPLICATION_VERSION_TYPE}")
+SET(APPLICATION_VENDOR_ID "za.ac.uct.cs")
+SET(APPLICATION_VENDOR_NAME "University of Cape Town")
+SET(APPLICATION_VENDOR_URL "people.cs.uct.ac.za/~rmulder")
+SET(APPLICATION_ID "${APPLICATION_VENDOR_ID}.${PROJECT_NAME}")
+
+#
+# Debugging Options
+#
+SET(CMAKE_VERBOSE_MAKEFILE 1) # Use 1 for debugging, 0 for release
+
+if(NOT MSVC)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O2 -g -gdwarf-3 -Wno-attributes -Wno-enum-compare -fPIC")
+    SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+    #SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fPIC")
+endif()
+
+add_definitions(-DBOOST_ALL_NO_LIB)
+
+if(MSVC)
+    # Boost system wont link without this
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
+    SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Z7 /O2")
+    # Compiler needs moar memories!
+    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm2000")
+
+    if(CMAKE_CXX_FLAGS_DEBUG MATCHES "/RTC1")
+      string(REPLACE "/RTC1" ""
+        CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+      message(STATUS "info: replaced '/RTC1' in CMAKE_CXX_FLAGS_DEBUG with ''
+            Value of CMAKE_CXX_FLAGS_DEBUG seen in cmake-gui is being
+    overridden with:
+            CMAKE_CXX_FLAGS_DEBUG='${CMAKE_CXX_FLAGS_DEBUG}'")
+    endif()
+
+endif()
+
+#
+# Project Output Paths
+#
+SET(MAINFOLDER ${PROJECT_SOURCE_DIR})
+SET(EXECUTABLE_OUTPUT_PATH "${MAINFOLDER}/bin")
+SET(LIBRARY_OUTPUT_PATH "${MAINFOLDER}/lib")
+SET(PLUGIN_OUTPUT_PATH "${MAINFOLDER}/lib/plugins")
+
+IF(WIN32)
+    SET(LIBRARY_OUTPUT_PATH "${MAINFOLDER}/bin")
+    SET(PLUGIN_OUTPUT_PATH "${MAINFOLDER}/plugins")
+ENDIF()
+
+#
+# Project Install Paths
+#
+SET(BIN_INSTALL "bin")
+SET(LIB_INSTALL "lib")
+SET(PLUGIN_INSTALL "lib/plugins")
+
+IF(WIN32)
+    SET(LIB_INSTALL "bin")
+    SET(PLUGIN_INSTALL "plugins")
+ENDIF()
+
+
+#
+# Project Search Paths
+#
+LIST(APPEND CMAKE_PREFIX_PATH "${MAINFOLDER}")
+LIST(APPEND CMAKE_PREFIX_PATH "${MAINFOLDER}/tools")
+LIST(APPEND CMAKE_PREFIX_PATH "${MAINFOLDER}/thirdparty")
+SET(CMAKE_MODULE_PATH "${MAINFOLDER}/tools/share/cmake")
+#INCLUDE_DIRECTORIES("${MAINFOLDER}/include")
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src)
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/build/src)
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/thirdparty/include)
+#INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/thirdparty/onlineforest/include)
+
+#
+# Locate Project Prerequisites 
+#
+FIND_PACKAGE(OpenGL REQUIRED)
+FIND_PACKAGE(Qt5Core REQUIRED)
+FIND_PACKAGE(Qt5Widgets REQUIRED)
+FIND_PACKAGE(Qt5Gui REQUIRED)
+FIND_PACKAGE(Qt5OpenGL REQUIRED)
+SET(FLANN_USE_STATIC On)
+FIND_PACKAGE(FLANN REQUIRED)
+FIND_PACKAGE(Eigen REQUIRED)
+
+FIND_PACKAGE(PCL 1.8 REQUIRED COMPONENTS
+     common
+     io
+     octree
+     kdtree # only the graph cut lib uses this
+           # if I dont load and link this in the main binary, it prevents unloading
+     search
+     features
+     filters
+#     visualization # depends on qt4?
+     segmentation
+)
+
+FIND_PACKAGE(Boost COMPONENTS system iostreams REQUIRED)
+
+FIND_PACKAGE(Leap)
+
+IF(WIN32)
+    find_package(GLEW REQUIRED)
+    include_directories(${GLEW_INCLUDE_DIR})
+ENDIF()
+
+#
+# Compiler settings
+#
+add_definitions(-DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
+add_definitions(-DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+
+IF(MSVC)
+    SET(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} /W2") # Mute warnings in ms
+    add_definitions(-DNOMINMAX) # Workaround for windows.h bug
+    add_definitions(-D_VARIADIC_MAX=10) # MSVC11 needs this to run gtest
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /FORCE:MULTIPLE")
+
+#    foreach(flag_var
+#            CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+#            CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+#       if(${flag_var} MATCHES "/MD")
+#          string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+#       endif(${flag_var} MATCHES "/MD")
+#    endforeach(flag_var)
+
+ELSE()
+    SET(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -Wall")
+    SET(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -std=c++0x")
+    SET(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -fopenmp")
+    SET(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+    SET(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
+    SET(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -fstack-protector-all")
+    SET(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -fPIC")
+    SET(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -pipe") # makes things faster?
+    # Make GCC like MSVC, SO FOR LIBS TO DO DLL_EXPORT TYPE THINGS
+    SET(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -fvisibility=hidden")
+    SET(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -fvisibility-inlines-hidden")
+ENDIF()
+
+#
+# Configure Files
+#
+FILE(GLOB_RECURSE CONFIGINPUTS1 include/*.in.h.cmake)
+FILE(GLOB_RECURSE CONFIGINPUTS2 include/*.h.in.cmake)
+FILE(GLOB_RECURSE CONFIGINPUTS3 src/*.in.h.cmake)
+FILE(GLOB_RECURSE CONFIGINPUTS4 src/*.h.in.cmake)
+FILE(GLOB_RECURSE CONFIGINPUTS5 test/*.in.h.cmake)
+FILE(GLOB_RECURSE CONFIGINPUTS6 test/*.h.in.cmake)
+LIST(APPEND CONFIGINPUTS "${CONFIGINPUTS1}")
+LIST(APPEND CONFIGINPUTS "${CONFIGINPUTS2}")
+LIST(APPEND CONFIGINPUTS "${CONFIGINPUTS3}")
+LIST(APPEND CONFIGINPUTS "${CONFIGINPUTS4}")
+LIST(APPEND CONFIGINPUTS "${CONFIGINPUTS5}")
+LIST(APPEND CONFIGINPUTS "${CONFIGINPUTS6}")
+FOREACH(CONFIGINPUT ${CONFIGINPUTS})
+    STRING(REPLACE ".in.h.cmake" ".h" CONFIGOUTPUT1 "${CONFIGINPUT}")
+    STRING(REPLACE ".h.in.cmake" ".h" CONFIGOUTPUT2 "${CONFIGOUTPUT1}")
+    CONFIGURE_FILE("${CONFIGINPUT}" "${CONFIGOUTPUT2}")
+ENDFOREACH(CONFIGINPUT ${CONFIGINPUTS})
+
+#
+# Add Build Targets
+#
+ADD_SUBDIRECTORY(thirdparty/EigenLibSVM ${CMAKE_CURRENT_BINARY_DIR}/EigenLibSVM)
+
+ADD_SUBDIRECTORY(thirdparty/omclboost ${CMAKE_CURRENT_BINARY_DIR}/omclboost)
+ADD_SUBDIRECTORY(src)
+#ADD_SUBDIRECTORY(thirdparty/gtest ${CMAKE_CURRENT_BINARY_DIR}/gtest)
+#ADD_SUBDIRECTORY(test)
+
+#
+# Add Documentation Targets
+#
+INCLUDE (DocumentationTargets)
+
+#
+# Add Install Targets
+#
+IF (EXISTS "${MAINFOLDER}/include/${PROJECT_NAME}" AND IS_DIRECTORY "${MAINFOLDER}/include/${PROJECT_NAME}")
+    INSTALL(DIRECTORY "${MAINFOLDER}/include/${PROJECT_NAME}" DESTINATION "include")
+ENDIF (EXISTS "${MAINFOLDER}/include/${PROJECT_NAME}" AND IS_DIRECTORY "${MAINFOLDER}/include/${PROJECT_NAME}")
+
+#
+# Resolve QT libraries for packaging
+#
+get_target_property(QtCore_LIBRARY_PATH Qt5::Core LOCATION)
+get_target_property(QtWidgets_LIBRARY_PATH Qt5::Widgets LOCATION)
+get_target_property(QtGui_LIBRARY_PATH Qt5::Gui LOCATION)
+get_target_property(QtOpenGL_LIBRARY_PATH Qt5::OpenGL LOCATION)
+set(QT_LIBRARIES ${QtCore_LIBRARY_PATH}
+    ${QtWidgets_LIBRARY_PATH}
+    ${QtGui_LIBRARY_PATH}
+    ${QtOpenGL_LIBRARY_PATH}
+)
+
+include(installtools)
+
+IF(WIN32)
+    FIND_DLLS("${PCL_LIBRARIES}" $ENV{PROGRAMW6432}/PCL/bin pcl_DLL_LIST_OUT)
+    FIND_DLLS("${GLEW_LIBRARIES}" "$ENV{GLEWROOT}/bin;${GLEWROOT}/bin" glew_DLL_LIST_OUT)
+
+    INSTALL(FILES ${QT_LIBRARIES} DESTINATION ${LIB_INSTALL} COMPONENT QT)
+    INSTALL(FILES ${pcl_DLL_LIST_OUT} DESTINATION ${LIB_INSTALL} COMPONENT PCL)
+    INSTALL(FILES ${glew_DLL_LIST_OUT} DESTINATION ${LIB_INSTALL} COMPONENT GLEW)
+
+    INSTALL(FILES   ${QT_LIB_PATH}/../plugins/platforms/qminimal.dll
+                    ${QT_LIB_PATH}/../plugins/platforms/qwindows.dll
+                    DESTINATION ${LIB_INSTALL}/platforms
+                    COMPONENT QT
+    )
+
+ELSE()
+
+    FIND_LIBRARY(LIB_QLINUX "qlinuxfb"
+                HINTS ${QT_LIB_PATH}/qt5/plugins/platforms
+                PATHS $ENV{QTDIR} ${QT_LIB_PATH}
+                PATH_SUFFIXES /../plugins/platforms /plugins/platforms
+    )
+
+    FIND_LIBRARY(LIB_QXCB "qxcb"
+                HINTS ${QT_LIB_PATH}/qt5/plugins/platforms
+                PATHS $ENV{QTDIR} ${QT_LIB_PATH}
+                PATH_SUFFIXES /../plugins/platforms /plugins/platforms
+    )
+
+    FIND_LIBRARY(LIB_QMINIMAL qminimal
+                HINTS ${QT_LIB_PATH}/qt5/plugins/platforms
+                PATHS $ENV{QTDIR} ${QT_LIB_PATH}
+                PATH_SUFFIXES /../plugins/platforms /plugins/platforms
+    )
+
+    MESSAGE("${QT_LIB_PATH}")
+    MESSAGE("STUFF FOUND: ${LIB_QLINUX} , ${LIB_QXCB}, ${LIB_QMINIMAL}")
+
+    LIST(REMOVE_ITEM PCL_LIBRARIES debug optimized)
+    RESOLVE_SYMLINKS("${PCL_LIBRARIES}" PCL_LIBRARIES)
+    RESOLVE_SYMLINKS("${QT_LIBRARIES};${QT_QTCORE_LIBRARY};${QT_QTGUI_LIBRARY};${QT_QTOPENGL_LIBRARY}" QT_LIBRARIES)
+
+    INSTALL(FILES dist/cloudclean.png DESTINATION share/pixmaps/)
+    INSTALL(FILES dist/cloudclean.desktop DESTINATION share/applications/)
+    INSTALL(FILES ${PCL_LIBRARIES} DESTINATION ${LIB_INSTALL} COMPONENT PCL)
+    INSTALL(FILES ${QT_LIBRARIES} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTOPENGL_LIBRARY} DESTINATION ${LIB_INSTALL} COMPONENT QT)
+
+    INSTALL(FILES ${LIB_QLINUX} DESTINATION ${LIB_INSTALL}/platforms COMPONENT QT)
+    INSTALL(FILES ${LIB_QXCB} DESTINATION ${LIB_INSTALL}/platforms COMPONENT QT)
+    INSTALL(FILES ${LIB_QMINIMAL} DESTINATION ${LIB_INSTALL}/platforms COMPONENT QT)
+ENDIF()
+
+#
+# Package
+#
+SET(CPACK_PACKAGE_DESCRIPTION "A pointcloud editing framework.")
+SET(CPACK_PACKAGE_CONTACT "Rickert Mulder <circlingthesun@gmail.com>")
+
+SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
+SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+
+SET(CPACK_PACKAGE_VERSION_MAJOR "0")
+SET(CPACK_PACKAGE_VERSION_MINOR "1")
+SET(CPACK_PACKAGE_VERSION_PATCH "0")
+
+SET(CPACK_PACKAGE_INSTALL_DIRECTORY "CloudClean ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}")
+
+IF(WIN32)
+    SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
+    INCLUDE(InstallRequiredSystemLibraries)
+    INSTALL(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+        DESTINATION ${LIB_INSTALL} COMPONENT VisualCPPRuntime)
+
+    SET(OMP_PATH $ENV{VCINSTALLDIR}/redist/x64/Microsoft.VC110.OpenMP/vcomp110.dll)
+    STRING(REGEX REPLACE "\\\\" "/" OMP_PATH ${OMP_PATH})
+
+    INSTALL(PROGRAMS ${OMP_PATH}
+        DESTINATION ${LIB_INSTALL} COMPONENT VisualCPPOpenMPRuntime)
+
+    SET(CPACK_GENERATOR "NSIS")
+    SET(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/dist\\\\cloudclean.bmp")
+    SET(CPACK_NSIS_INSTALLED_ICON_NAME "${CMAKE_CURRENT_SOURCE_DIR}/src/cloudclean.ico")
+    SET(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/src/cloudclean.ico")
+    SET(CPACK_NSIS_DISPLAY_NAME "CloudClean")
+    SET(CPACK_NSIS_CREATE_ICONS "CreateShortCut '\$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\${PROJECT_NAME}.lnk' '\$INSTDIR\\\\bin\\\\cloudclean.exe'")
+    SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\people.cs.uct.ac.za/~rmulder")
+    SET(CPACK_NSIS_CONTACT ${CPACK_PACKAGE_CONTACT})
+    SET(CPACK_NSIS_MODIFY_PATH ON)
+    SET(CPACK_NSIS_MUI_FINISHPAGE_RUN "cloudclean.exe")
+    SET(CPACK_NSIS_MODIFY_PATH "OFF")
+
+ELSE()
+    SET(CPACK_GENERATOR "DEB")
+    SET(CPACK_dist_PACKAGE_NAME, "cloudclean")
+    SET(CPACK_dist_PACKAGE_ARCHITECTURE "amd64")
+    #SET(CPACK_dist_PACKAGE_DEPENDS "libc6 (>= 2.3.1-6), libgcc1 (>= 1:3.4.2-12), libqt4-opengl (>=4.8.0), libqt4-core (>=4.8.0), libqt4-gui (>=4.8.0), libglu1-mesa")
+    SET(CPACK_dist_PACKAGE_DEPENDS "libglu1-mesa")
+    SET(CPACK_dist_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_SOURCE_DIR}/dist/postinst")
+    SET(CPACK_dist_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_SOURCE_DIR}/dist/postinst;${CMAKE_CURRENT_SOURCE_DIR}/dist/prerm;")
+ENDIF()
+
+INCLUDE(CPack)
