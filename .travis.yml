@@ -18,6 +18,5 @@ before_install:
   - wget http://public.jacklab.co.za/PCL-1.7.0-Linux.deb
   - sudo dpkg -i PCL-1.7.0-Linux.deb
 script:
-  - cd cloudclean
   - mkdir build && cd build
   - cmake -DCMAKE_BUILD_TYPE=Release .. && make -j2
