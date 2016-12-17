@@ -6,9 +6,21 @@ compiler:
 before_install:
   - git submodule update --init --recursive
   - sudo apt-get install gcc g++
-  - sudo apt-get install gcc g++ libsvm-dev cmake libgomp1 libpng12-0 libqhull-dev libusb-1.0-0 libboost-all-dev qtbase5-dev mesa-common-dev libflann-dev libeigen3-dev
-  - wget http://public.jacklab.co.za/PCL-1.7.0-Linux.deb
-  - sudo dpkg -i PCL-1.7.0-Linux.deb
+  - sudo apt-get install gcc g++ git libsvm-dev cmake libgomp1 libpng12-0 libqhull-dev libusb-1.0-0 libboost-all-dev qtbase5-dev mesa-common-dev libflann-dev libeigen3-dev
+  - git clone git clone https://github.com/PointCloudLibrary/pcl.git
+  # Install pcl
+  - sudo apt-get install g++ cmake doxygen mpi-default-dev openmpi-bin openmpi-common libflann1 libflann-dev libeigen3-dev libboost-all-dev libqhull* libusb-dev libgtest-dev freeglut3-dev pkg-config build-essential libxmu-dev libxi-dev libusb-1.0-0-dev
+  - sudo apt-get install libvtk5.8-qt4 libvtk5.8 libvtk5-dev qt-sdk
+  # - sudo apt-get install openjdk-7-jdk openjdk-7-jre
+  # - sudo apt-get install graphviz mono-complete
+
+  - mkdir pclbuild
+  - cd pclbuild
+  - cmake -DCMAKE_BUILD_TYPE=None -DBUILD_GPU=ON ../pcl
+  - make
+  - sudo sudo make install
+  - cd ..
+
 script:
   - mkdir build && cd build
   - cmake -DCMAKE_BUILD_TYPE=Release .. && make -j2

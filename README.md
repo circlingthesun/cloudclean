@@ -1,6 +1,8 @@
 # CloudClean
 ![Screenshot](docs/screenshot.png "Screenshot")
 
+[![Build Status](https://travis-ci.org/circlingthesun/cloudclean.svg)](https://travis-ci.org/circlingthesun/cloudclean)
+
 ## PREREQUISITES
 
 * Cross-platform Make (CMake) v2.6.2+
