@@ -1,13 +1,22 @@
-dist: xenial
+sudo: required
+
 language: cpp
+
 compiler:
-  - gcc
-#  - clang
+- g++
+
+services:
+- docker
+
+before_install:
+- docker pull ubuntu:16.04
+- docker run -t -i ubuntu /bin/bash
+
 before_install:
   - git submodule update --init --recursive
   - sudo apt-get install gcc g++
   - sudo apt-get install gcc g++ git libsvm-dev cmake libgomp1 libpng12-0 libqhull-dev libusb-1.0-0 libboost-all-dev qtbase5-dev mesa-common-dev libflann-dev libeigen3-dev
-  - git clone git clone https://github.com/PointCloudLibrary/pcl.git
+  - git clone https://github.com/PointCloudLibrary/pcl.git
   # Install pcl
   - sudo apt-get install g++ cmake doxygen mpi-default-dev openmpi-bin openmpi-common libflann1 libflann-dev libeigen3-dev libboost-all-dev libqhull* libusb-dev libgtest-dev freeglut3-dev pkg-config build-essential libxmu-dev libxi-dev libusb-1.0-0-dev
   - sudo apt-get install libvtk5.8-qt4 libvtk5.8 libvtk5-dev qt-sdk
@@ -22,5 +31,7 @@ before_install:
   - cd ..
 
 script:
-  - mkdir build && cd build
+  - mkdir build
+  - cd build
   - cmake -DCMAKE_BUILD_TYPE=Release .. && make -j2
+# script: "bash -c ./build.sh"
