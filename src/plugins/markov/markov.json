@@ -1,0 +1,6 @@
+{
+            "name" : "markov",
+         "version" : "0.0.1",
+    "dependencies" : [{ "name" : "normalestimation", "version" : "0.0.1" }],
+    "export_symbols" : false
+}

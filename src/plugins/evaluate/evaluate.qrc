@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>evaluate.png</file>
+    </qresource>
+</RCC>

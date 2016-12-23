@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>basic.frag</file>
+        <file>basic.vert</file>
+        <file>images/snake.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>morphology.png</file>
+    </qresource>
+</RCC>

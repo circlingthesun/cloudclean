@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/graph_cut.png</file>
+        <file>graph.vs.glsl</file>
+        <file>graph.gs.glsl</file>
+        <file>graph.fs.glsl</file>
+    </qresource>
+</RCC>

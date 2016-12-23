@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>normals.fs.glsl</file>
+        <file>normals.gs.glsl</file>
+        <file>normals.vs.glsl</file>
+    </qresource>
+</RCC>

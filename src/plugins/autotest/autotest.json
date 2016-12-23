@@ -1,0 +1,6 @@
+{
+            "name" : "autotest",
+         "version" : "0.0.1",
+    "dependencies" : [{ "name" : "project", "version" : "0.0.1" }, { "name" : "featureeval", "version" : "0.0.1" }],
+    "export_symbols" : false
+}
