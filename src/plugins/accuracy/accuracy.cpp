@@ -257,7 +257,7 @@ void Accuracy::sample() {
 
     for(uint i = 0; i < cl_->active_->points.size(); i++){
         uint16_t label = cl_->active_->labels_[i];
-        bool selected = int8_t(cl_->active_->flags_[i]) & 1; // Only count red
+        bool selected = int8_t(cl_->active_->flags_[i]) & mw_->select_mask_; // Count whatever is selected
         bool targetted = is_label_in_set(label, target_);
 
         if(targetted){

@@ -324,22 +324,9 @@ void Markov::randomforest(){
     hp.counterThreshold = 140;
     hp.numTrees = 100;
 
-    // Boosting
-//    hp.numBases = 10;
-//    hp.weakLearner = WEAK_ORF; // WEAK_LARANK; // 0: ORF, 1: LaRank
-//    hp.shrinkage = 0.5;
-//    hp.lossFunction = EXPONENTIAL; // LOGIT; // 0 = Exponential Loss, 1 = Logit Loss
-//    hp.cacheSize = 1;
-//    hp.C = 5.0;
-//    hp.nuD = 2.0;
-//    hp.nuP = 1e-6;
-//    hp.annealingRate = 0.9999999;
-//    hp.theta = 1.0;
-//    hp.numIterations = 1;
-
     // Experimenter
-    hp.numEpochs = 5;
-    hp.findTrainError = 1;
+    hp.numEpochs = 1;
+    hp.findTrainError = 0;
 
     // Output
     hp.verbose = 1;
@@ -406,20 +393,29 @@ void Markov::randomforest(){
 
             labels.insert(y);
 
+            sample.x(0) = 0;
+            sample.x(1) = 0;
+            sample.x(2) = 0;
+            sample.x(3) = 0;
+            sample.x(4) = 0;
+            sample.x(5) = 0;
+            sample.x(6) = 0;
+            sample.x(7) = 0;
+            sample.x(8) = 0;
+            sample.x(9) = 0;
+
             //set samples
             sample.x(0) = smallcloud->at(idx).x;
             sample.x(1) = smallcloud->at(idx).y;
             sample.x(2) = smallcloud->at(idx).z;
             sample.x(3) = smallcloud->at(idx).intensity;
-            sample.x(4) = 0;//smallcloud->at(idx).normal_x;
-            sample.x(5) = 0;//smallcloud->at(idx).normal_y;
-            sample.x(6) = 0;//smallcloud->at(idx).normal_z;
+            sample.x(4) = smallcloud->at(idx).normal_x;
+            sample.x(5) = smallcloud->at(idx).normal_y;
+            sample.x(6) = smallcloud->at(idx).normal_z;
             sample.x(7) = (*pca)[idx][0];
             sample.x(8) = (*pca)[idx][1];
             sample.x(9) = (*pca)[idx][2];
 
-
-            //std::cout << "sample:" << sample.x << endl;
 
 
             if((count2++%2==0))
