@@ -77,8 +77,8 @@ boost::shared_ptr<std::vector<Eigen::Vector3f> > getPCA(pcl::PointCloud<PointT> 
     boost::shared_ptr<std::vector<Eigen::Vector3f> > eigen_vals =
             boost::make_shared<std::vector<Eigen::Vector3f>>(cloud->size());
 
-    pcl::KdTreeFLANN<PointT> search;
     typename pcl::PointCloud<PointT>::ConstPtr cptr(cloud, boost::serialization::null_deleter());
+    pcl::KdTreeFLANN<PointT> search;
     search.setInputCloud(cptr);
 
     int less_than_three_points_count = 0;
@@ -88,7 +88,7 @@ boost::shared_ptr<std::vector<Eigen::Vector3f> > getPCA(pcl::PointCloud<PointT> 
     std::vector<float> kDist;
 
     // For every point
-    for(unsigned int i = 0; i < cloud->size(); i++){
+    for(uint i = 0; i < cloud->size(); i++){
 
         search.radiusSearch(i, radius, *kIdxs, kDist, max_nn);
 
@@ -107,25 +107,7 @@ boost::shared_ptr<std::vector<Eigen::Vector3f> > getPCA(pcl::PointCloud<PointT> 
         pcEstimator.setInputCloud (cptr);
         pcEstimator.setIndices(kIdxs);
         (*eigen_vals)[i] = pcEstimator.getEigenValues();
-
-/*
-        for(int j = 0; j < 3; j++ ){
-            float val = (*eigen_vals)[i][j];
-            if(val > max)
-                max = val;
-            else if(val < min)
-                min = val;
-        }
-*/
-        //(*eigen_vals)[i].normalize(); // SHOULD THIS BE NORMALISED?
-
     }
-
-    /*
-    for(unsigned int i = 0; i < cloud->size(); i++){
-        (*eigen_vals)[i] = ((*eigen_vals)[i] - Eigen::Vector3f(min, min, min) ) / (max - min);
-    }
-    */
 
     return eigen_vals;
 }
