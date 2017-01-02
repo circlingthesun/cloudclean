@@ -1,3 +1,4 @@
+#include <cmath>
 #include "plugins/markov/markov.h"
 #include <QDebug>
 #include <QAction>
@@ -155,31 +156,17 @@ void Markov::randomforest(){
     pcl::PointCloud<pcl::PrincipalCurvatures>::Ptr principalCurvatures (new pcl::PointCloud<pcl::PrincipalCurvatures> ());
     principalCurvaturesEstimation.compute (*principalCurvatures);
 
-    const uint NUM_FEATURES = 16;
+    const uint NUM_FEATURES = 18;
 
     // Feature compute
     auto mkFeatureVector = [&](uint idx) {
         Eigen::VectorXd vec(NUM_FEATURES);
-
-
-//        vec(0) = 0;
-//        vec(1) = 0;
-//        vec(2) = 0;
-//        vec(3) = 0;
-//        vec(4) = 0;
-//        vec(5) = 0;
-//        vec(6) = 0;
-//        vec(7) = 0;
-//        vec(8) = 0;
-//        vec(9) = 0;
-//        vec(10) = 0;
-//        vec(11) = 0;
-//        vec(12) = 0;
+        vec.setZero();
 
         //set samples
-        vec(0) = smallcloud->at(idx).x;
-        vec(1) = smallcloud->at(idx).y;
-        vec(2) = smallcloud->at(idx).z;
+//        vec(0) = smallcloud->at(idx).x;
+//        vec(1) = smallcloud->at(idx).y;
+//        vec(2) = smallcloud->at(idx).z;
         vec(3) = smallcloud->at(idx).intensity;
         vec(4) = smallcloud->at(idx).normal_x;
         vec(5) = smallcloud->at(idx).normal_y;
@@ -207,6 +194,12 @@ void Markov::randomforest(){
 
         // linearity
         vec(15) = (pca_[0] - pca_[1]) / pca_[0];
+
+        // omnivariance
+        vec(16) = std::cbrt(pca_[0] * pca_[1] * pca_[0]);
+
+        // eigen entrophy
+        vec(17) = -(pca_[0] * std::log(pca_[0]) + pca_[1] * std::log(pca_[1]) + pca_[2] * std::log(pca_[0]));
 
         return vec;
     };
