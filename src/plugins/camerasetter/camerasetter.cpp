@@ -132,8 +132,8 @@ void CameraSetter::initialize(Core *core){
 
         Eigen::Vector3f pos = glwidget_->camera_.getPosition();
 
-        std::cout << "target: " << target_.transpose() << std::endl;
-        std::cout << "pos: " << pos.transpose() << std::endl;
+//        std::cout << "target: " << target_.transpose() << std::endl;
+//        std::cout << "pos: " << pos.transpose() << std::endl;
 
         float dist = (pos - target_).norm();
         distance_text_->setText(QString::number(dist));

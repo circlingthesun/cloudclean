@@ -26,9 +26,7 @@ class Markov : public IPlugin {
     ~Markov();
 
  private:
-    void graphcut(int idx = 0);
     void randomforest();
-    void svm();
 
  signals:
     void enabling();
