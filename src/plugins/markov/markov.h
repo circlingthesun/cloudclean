@@ -2,6 +2,9 @@
 #define MARKOV_H
 
 #include "pluginsystem/iplugin.h"
+#include "featurelist.h"
+#include <boost/serialization/shared_ptr.hpp>
+#include <pcl/features/principal_curvatures.h>
 class QAction;
 class QWidget;
 class Core;
@@ -10,8 +13,11 @@ class LayerList;
 class FlatView;
 class GLWidget;
 class MainWindow;
-class Picker;
 class NormalEstimator;
+class QVBoxLayout;
+class QTableView;
+class QDockWidget;
+class QDoubleSpinBox;
 
 class Markov : public IPlugin {
     Q_INTERFACES(IPlugin)
@@ -44,15 +50,35 @@ class Markov : public IPlugin {
     FlatView * flatview_;
     MainWindow * mw_;
 
-    Picker * picker_;
     NormalEstimator * ne_;
 
     QAction * enable_;
-    QAction * forrest_action_;
-    QAction * svm_action_;
-    bool enabled_;
+    QAction * forest_action_;
 
-    int fg_idx_;
+    QWidget * dock_widget_;
+    QDockWidget * dock_;
+
+    FeatureList * feature_list_;
+    QTableView * feature_view_;
+
+    QDoubleSpinBox * pca_radius_spinner_;
+    QDoubleSpinBox * curvature_radius_spinner_;
+    QDoubleSpinBox * octree_cell_size_spinner_;
+
+    double pca_radius_;
+    double curvature_radius_;
+    double octree_cell_size_;
+
+    pcl::PointCloud<pcl::PointXYZINormal>::Ptr smallcloud_;
+    std::vector<int> big_to_small_;
+    boost::shared_ptr<std::vector<Eigen::Vector3f> > pca_;
+    pcl::PointCloud<pcl::PrincipalCurvatures>::Ptr principal_curvatures_;
+
+    bool pca_dirty_ = true;
+    bool curvatures_dirty_ = true;
+    bool downsample_dirty_ = true;
+
+    bool enabled_;
 };
 
 #endif  // MARKOV_H

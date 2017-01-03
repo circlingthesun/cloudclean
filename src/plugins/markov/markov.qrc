@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>markov.png</file>
         <file>randomforest.png</file>
+        <file>settings.png</file>
     </qresource>
 </RCC>
