@@ -284,7 +284,9 @@ void Accuracy::sample() {
     precision = std::isnan(precision) ? 0 : precision;
     recall = std::isnan(recall) ? 0 : recall;
 
-    accuracy_text_->setText(QString::number(fscore));
+//    accuracy_text_->setText(QString::number(fscore) + " " + QString::number(precision) + " ");
+
+    accuracy_text_->setText(QString("%1 (p: %2 r: %3)").arg(fscore).arg(precision).arg(recall));
 
     int seconds = time_.elapsed()/1000;
 
@@ -309,8 +311,10 @@ void Accuracy::sample() {
 }
 
 void Accuracy::cleanup(){
+    if(is_enabled_){
+        disable();
+    }
     mw_->toolbar_->removeAction(enable_);
-    mw_->tooloptions_->removeWidget(dock_widget_);
     delete enable_;
 }
 

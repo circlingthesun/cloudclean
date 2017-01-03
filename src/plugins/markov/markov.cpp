@@ -138,8 +138,6 @@ void Markov::randomforest(){
     smallcloud = octreeDownsample(smallcloud.get(), 0.05, big_to_small);
 
 
-
-
     // PCA
     boost::shared_ptr<std::vector<Eigen::Vector3f> > pca = getPCA(smallcloud.get(), 0.5f, 0);
 
@@ -151,55 +149,60 @@ void Markov::randomforest(){
     pcl::search::KdTree<pcl::PointXYZINormal>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZINormal>);
     tree->setInputCloud(smallcloud);
     principalCurvaturesEstimation.setSearchMethod (tree);
-    principalCurvaturesEstimation.setRadiusSearch(0.5);
+    principalCurvaturesEstimation.setRadiusSearch(0.125);
 
     pcl::PointCloud<pcl::PrincipalCurvatures>::Ptr principalCurvatures (new pcl::PointCloud<pcl::PrincipalCurvatures> ());
     principalCurvaturesEstimation.compute (*principalCurvatures);
 
-    const uint NUM_FEATURES = 18;
+    const uint NUM_FEATURES = 12;
 
     // Feature compute
     auto mkFeatureVector = [&](uint idx) {
         Eigen::VectorXd vec(NUM_FEATURES);
         vec.setZero();
 
+        int featnum = -1;
+
         //set samples
-//        vec(0) = smallcloud->at(idx).x;
-//        vec(1) = smallcloud->at(idx).y;
-//        vec(2) = smallcloud->at(idx).z;
-        vec(3) = smallcloud->at(idx).intensity;
-        vec(4) = smallcloud->at(idx).normal_x;
-        vec(5) = smallcloud->at(idx).normal_y;
-        vec(6) = smallcloud->at(idx).normal_z;
+        vec(++featnum) = smallcloud->at(idx).x;
+        vec(++featnum) = smallcloud->at(idx).y;
+        vec(++featnum) = smallcloud->at(idx).z;
+        vec(++featnum) = smallcloud->at(idx).intensity;
+        vec(++featnum) = smallcloud->at(idx).normal_x;
+        vec(++featnum) = smallcloud->at(idx).normal_y;
+        vec(++featnum) = smallcloud->at(idx).normal_z;
 
         Eigen::Vector3f & pca_ = (*pca)[idx];
 
-        vec(7) = pca_[0];
-        vec(8) = pca_[1];
-        vec(9) = pca_[2];
+        vec(++featnum) = pca_[0];
+        vec(++featnum) = pca_[1];
+        vec(++featnum) = pca_[2];
 
         const pcl::PrincipalCurvatures & curv = principalCurvatures->points[idx];
 
-        vec(10) = curv.pc1;
-        vec(11) = curv.pc2;
+        vec(++featnum) = curv.pc1;
+        vec(++featnum) = curv.pc2;
 
-        // anisotrophy
-        vec(12) = (pca_[0] - pca_[2]) / pca_[0];
+//        // anisotrophy =
+//        vec(++featnum) = (pca_[0] - pca_[2]) / pca_[0];
 
-        // planarity
-        vec(13) = (pca_[1] - pca_[2]) / pca_[0];
+//        // planarity
+//        vec(++featnum) = (pca_[1] - pca_[2]) / pca_[0];
 
-        // spherity
-        vec(14) = pca_[2] / pca_[0];
+//        // spherity
+//        vec(++featnum) = pca_[2] / pca_[0];
 
-        // linearity
-        vec(15) = (pca_[0] - pca_[1]) / pca_[0];
+//        // linearity
+//        vec(++featnum) = (pca_[0] - pca_[1]) / pca_[0];
 
-        // omnivariance
-        vec(16) = std::cbrt(pca_[0] * pca_[1] * pca_[0]);
+//        // omnivariance
+//        vec(++featnum) = std::cbrt(pca_[0] * pca_[1] * pca_[0]);
 
-        // eigen entrophy
-        vec(17) = -(pca_[0] * std::log(pca_[0]) + pca_[1] * std::log(pca_[1]) + pca_[2] * std::log(pca_[0]));
+//        // eigen entrophy
+//        vec(++featnum) = -(pca_[0] * std::log(pca_[0]) + pca_[1] * std::log(pca_[1]) + pca_[2] * std::log(pca_[0]));
+
+        // rusu curvature estimation
+//        vec(++featnum) = pca_[0] / (pca_[0] + pca_[1] + pca_[2]);
 
         return vec;
     };
