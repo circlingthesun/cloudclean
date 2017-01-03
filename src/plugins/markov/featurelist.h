@@ -44,11 +44,9 @@ class FeatureList : public QAbstractListModel {
     bool hasFeature(QString name){
         for(Feature & f : features_) {
             if(f.name_ == name && f.enabled_){
-                qDebug() << name  << true;
                 return true;
             }
         }
-        qDebug() << name  << false;
         return false;
     }
 
