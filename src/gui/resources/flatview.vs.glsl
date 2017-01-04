@@ -40,6 +40,12 @@ void main( void ) {
         colour = colour * 0.7f + select_colour/select_count * 0.3f;
     }
 
+    // Make it white if invisible
+    if(colour.a == 0) {
+        colour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+        return;
+    }
+
     vec3 pos = vec3(position, 1.0f);
 
     gl_Position = vec4((camera*pos).xy, 0, 1);

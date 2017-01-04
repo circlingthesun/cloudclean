@@ -18,6 +18,7 @@ class QVBoxLayout;
 class QTableView;
 class QDockWidget;
 class QDoubleSpinBox;
+class QSpinBox;
 
 class Markov : public IPlugin {
     Q_INTERFACES(IPlugin)
@@ -65,9 +66,15 @@ class Markov : public IPlugin {
     QDoubleSpinBox * curvature_radius_spinner_;
     QDoubleSpinBox * octree_cell_size_spinner_;
 
+    QSpinBox * tree_count_spinner_;
+    QSpinBox * tree_depth_spinner_;
+
     double pca_radius_;
     double curvature_radius_;
     double octree_cell_size_;
+
+    int tree_count_;
+    int tree_depth_;
 
     pcl::PointCloud<pcl::PointXYZINormal>::Ptr smallcloud_;
     std::vector<int> big_to_small_;

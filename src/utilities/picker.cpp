@@ -347,7 +347,7 @@ uint Picker::renderPick3d(int x, int y){
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); CE();
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0); CE();
 
-    qDebug() << "render pick" << data;
+//    qDebug() << "render pick" << data;
 
     if(data > 1000000000)
         return -1;

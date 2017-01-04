@@ -12,6 +12,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QDoubleSpinBox>
+#include <QSpinBox>
 #include <functional>
 #include <boost/serialization/shared_ptr.hpp>
 #include <pcl/search/kdtree.h>
@@ -48,6 +49,9 @@ void Markov::initialize(Core *core){
     curvature_radius_ = 0.1;
     octree_cell_size_ = 0.05;
 
+    tree_count_ = 100;
+    tree_depth_ = 10;
+
     enable_ = new QAction(QIcon(":/settings.png"), "Forest settings", 0);
     forest_action_ = new QAction(QIcon(":/randomforest.png"), "Run random forest", 0);
 
@@ -60,9 +64,22 @@ void Markov::initialize(Core *core){
     curvature_radius_spinner_ = new QDoubleSpinBox();
     octree_cell_size_spinner_ = new QDoubleSpinBox();
 
+    tree_count_spinner_ = new QSpinBox();
+    tree_depth_spinner_ = new QSpinBox();
+
+    pca_radius_spinner_->setDecimals(3);
+    curvature_radius_spinner_->setDecimals(3);
+    octree_cell_size_spinner_->setDecimals(3);
+
+    tree_count_spinner_->setRange(1, 5000);
+    tree_depth_spinner_->setRange(1, 25);
+
     pca_radius_spinner_->setValue(pca_radius_);
     curvature_radius_spinner_->setValue(curvature_radius_);
     octree_cell_size_spinner_->setValue(octree_cell_size_);
+
+    tree_count_spinner_->setValue(tree_count_);
+    tree_depth_spinner_->setValue(tree_depth_);
 
     connect(cl_, &CloudList::updatedActive, [&](){
         pca_dirty_ = true;
@@ -85,6 +102,14 @@ void Markov::initialize(Core *core){
         pca_dirty_ = true;
         curvatures_dirty_ = true;
         downsample_dirty_ = true;
+    });
+
+    connect(tree_count_spinner_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [=] (int value){
+        tree_count_ = value;
+    });
+
+    connect(tree_depth_spinner_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [=] (int value){
+        tree_depth_ = value;
     });
 
 }
@@ -123,6 +148,11 @@ void Markov::initialize2(PluginManager * pm) {
     dock_layout->addWidget(feature_view_);
 
 //    QPushButton * cache_reset = new QPushButton("Reset cache");
+
+    dock_layout->addWidget(new QLabel("Number of trees"));
+    dock_layout->addWidget(tree_count_spinner_);
+    dock_layout->addWidget(new QLabel("Max tree depth"));
+    dock_layout->addWidget(tree_depth_spinner_);
 
     dock_layout->addWidget(new QLabel("PCA radius"));
     dock_layout->addWidget(pca_radius_spinner_);
@@ -343,10 +373,10 @@ void Markov::randomforest(){
     Hyperparameters hp;
 
     // Forest
-    hp.maxDepth = 10;
+    hp.maxDepth = tree_depth_;
     hp.numRandomTests = 1;
     hp.counterThreshold = 140;
-    hp.numTrees = 100;
+    hp.numTrees = tree_count_;
 
     // Experimenter
     hp.numEpochs = 1;
