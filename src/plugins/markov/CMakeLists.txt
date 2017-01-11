@@ -1,3 +1,4 @@
+add_definitions(-Dmarkov_EXPORTS)
 include_directories(
     ${PCL_INCLUDE_DIRS}
     ${FLANN_INCLUDE_DIRS}

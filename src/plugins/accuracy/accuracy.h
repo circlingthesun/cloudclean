@@ -5,8 +5,11 @@
 #include <boost/weak_ptr.hpp>
 #include <QTimer>
 #include <QTime>
-#include "pluginsystem/iplugin.h"
 #include <tuple>
+
+#include "plugins/accuracy/export.h"
+#include "pluginsystem/iplugin.h"
+
 class QAction;
 class QWidget;
 class Core;
@@ -22,7 +25,7 @@ class QDoubleSpinBox;
 class QDockWidget;
 class QPushButton;
 
-class Accuracy : public IPlugin {
+class ACCURACY_API Accuracy : public IPlugin {
     Q_INTERFACES(IPlugin)
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "za.co.circlingthesun.cloudclean.accuracy" FILE "accuracy.json")
@@ -35,10 +38,13 @@ class Accuracy : public IPlugin {
  signals:
    void enabling();
 
+ public slots:
+   std::tuple<float, float, float> sample();
+
  private slots:
     void enable();
     void disable();
-    void sample();
+
 
     void start_stop();
     void reset();

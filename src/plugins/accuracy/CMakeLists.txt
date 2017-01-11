@@ -1,3 +1,4 @@
+add_definitions(-Daccuracy_EXPORTS)
 include_directories(
     ${PCL_INCLUDE_DIRS}
     ${FLANN_INCLUDE_DIRS}

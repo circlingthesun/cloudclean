@@ -1,6 +1,5 @@
 #include <cmath>
 #include <ctime>
-#include "plugins/markov/markov.h"
 #include <QDebug>
 #include <QAction>
 #include <QToolBar>
@@ -17,6 +16,7 @@
 #include <boost/serialization/shared_ptr.hpp>
 #include <pcl/search/kdtree.h>
 #include <pcl/features/principal_curvatures.h>
+#include "plugins/markov/markov.h"
 #include "model/layerlist.h"
 #include "model/cloudlist.h"
 #include "gui/glwidget.h"
@@ -51,6 +51,8 @@ void Markov::initialize(Core *core){
 
     tree_count_ = 100;
     tree_depth_ = 10;
+    max_nn_ = 100000;
+    density_radius_ = 0.25;
 
     enable_ = new QAction(QIcon(":/settings.png"), "Forest settings", 0);
     forest_action_ = new QAction(QIcon(":/randomforest.png"), "Run random forest", 0);
@@ -63,16 +65,19 @@ void Markov::initialize(Core *core){
     pca_radius_spinner_ = new QDoubleSpinBox();
     curvature_radius_spinner_ = new QDoubleSpinBox();
     octree_cell_size_spinner_ = new QDoubleSpinBox();
+    density_radius_spinner_ = new QDoubleSpinBox();
 
     tree_count_spinner_ = new QSpinBox();
     tree_depth_spinner_ = new QSpinBox();
+    max_nn_spinner_ = new QSpinBox();
 
     pca_radius_spinner_->setDecimals(3);
     curvature_radius_spinner_->setDecimals(3);
     octree_cell_size_spinner_->setDecimals(3);
 
     tree_count_spinner_->setRange(1, 5000);
-    tree_depth_spinner_->setRange(1, 25);
+    tree_depth_spinner_->setRange(1, 100);
+    max_nn_spinner_->setRange(1, 100000);
 
     pca_radius_spinner_->setValue(pca_radius_);
     curvature_radius_spinner_->setValue(curvature_radius_);
@@ -80,11 +85,16 @@ void Markov::initialize(Core *core){
 
     tree_count_spinner_->setValue(tree_count_);
     tree_depth_spinner_->setValue(tree_depth_);
+    max_nn_spinner_->setValue(max_nn_);
 
     connect(cl_, &CloudList::updatedActive, [&](){
         pca_dirty_ = true;
         curvatures_dirty_ = true;
         downsample_dirty_ = true;
+    });
+
+    connect(density_radius_spinner_, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [=] (double value){
+        density_radius_ = value;
     });
 
     connect(pca_radius_spinner_, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [=] (double value){
@@ -112,6 +122,16 @@ void Markov::initialize(Core *core){
         tree_depth_ = value;
     });
 
+    connect(max_nn_spinner_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [=] (int value){
+        max_nn_ = value;
+        pca_dirty_ = true;
+    });
+
+    connect(forest_action_, &QAction::triggered, [this] (bool on) {
+        randomforest();
+    });
+
+    connect(enable_, SIGNAL(triggered()), this, SLOT(enable()));
 }
 
 void Markov::initialize2(PluginManager * pm) {
@@ -123,13 +143,7 @@ void Markov::initialize2(PluginManager * pm) {
 
 
     enable_->setCheckable(true);
-    connect(enable_, SIGNAL(triggered()), this, SLOT(enable()));
     mw_->toolbar_->addAction(enable_);
-
-    connect(forest_action_, &QAction::triggered, [this] (bool on) {
-        randomforest();
-    });
-
     mw_->toolbar_->addAction(forest_action_);
 
     enabled_ = false;
@@ -147,22 +161,23 @@ void Markov::initialize2(PluginManager * pm) {
     QVBoxLayout * dock_layout = new QVBoxLayout();
     dock_layout->addWidget(feature_view_);
 
-//    QPushButton * cache_reset = new QPushButton("Reset cache");
-
     dock_layout->addWidget(new QLabel("Number of trees"));
     dock_layout->addWidget(tree_count_spinner_);
     dock_layout->addWidget(new QLabel("Max tree depth"));
     dock_layout->addWidget(tree_depth_spinner_);
 
+    dock_layout->addWidget(new QLabel("PCA max nn"));
+    dock_layout->addWidget(max_nn_spinner_);
     dock_layout->addWidget(new QLabel("PCA radius"));
     dock_layout->addWidget(pca_radius_spinner_);
     dock_layout->addWidget(new QLabel("Curvature radius"));
     dock_layout->addWidget(curvature_radius_spinner_);
     dock_layout->addWidget(new QLabel("Downsample radius"));
     dock_layout->addWidget(octree_cell_size_spinner_);
+    dock_layout->addWidget(new QLabel("Density radius"));
+    dock_layout->addWidget(density_radius_spinner_);
 
 
-//    dock_layout->addStretch();
     dock_layout->setStretch(100, 100);
 
 
@@ -225,6 +240,10 @@ void Markov::randomforest(){
     if(cloud == nullptr)
         return;
 
+//    pca_dirty_ = true;
+//    curvatures_dirty_ = true;
+//    downsample_dirty_ = true;
+
     uint NUM_FEATURES = feature_list_->activeCount();
 
     bool use_x = feature_list_->hasFeature("X");
@@ -241,11 +260,37 @@ void Markov::randomforest(){
     bool use_pc2 = feature_list_->hasFeature("Curvature 2");
     bool use_a = feature_list_->hasFeature("Anisotrophy");
     bool use_p = feature_list_->hasFeature("Planarity");
-    bool use_s = feature_list_->hasFeature("Spherity");
+    bool use_s = feature_list_->hasFeature("Sphericity");
     bool use_l = feature_list_->hasFeature("Linearity");
     bool use_o = feature_list_->hasFeature("Omnivariance");
-    bool use_ee = feature_list_->hasFeature("Eigen entrophy");
-    bool use_rc = feature_list_->hasFeature("Rusu Curvature");
+    bool use_ee = feature_list_->hasFeature("Eigenentrophy");
+    bool use_rc = feature_list_->hasFeature("Curvature");
+    bool use_odist = feature_list_->hasFeature("Distance from origin");
+    bool use_n_count = feature_list_->hasFeature("Number of neighbours");
+
+
+    if(use_x) qDebug() << "using: " << "X";
+    if(use_y) qDebug() << "using: " << "Y";
+    if(use_z) qDebug() << "using: " << "Z";
+    if(use_i) qDebug() << "using: " << "Intensity";
+    if(use_nx) qDebug() << "using: " << "X Normal";
+    if(use_ny) qDebug() << "using: " << "Y Normal";
+    if(use_nz) qDebug() << "using: " << "Z Normal";
+    if(use_e1) qDebug() << "using: " << "Eigen 1";
+    if(use_e2) qDebug() << "using: " << "Eigen 2";
+    if(use_e3) qDebug() << "using: " << "Eigen 3";
+    if(use_pc1) qDebug() << "using: " << "Curvature 1";
+    if(use_pc2) qDebug() << "using: " << "Curvature 2";
+    if(use_a) qDebug() << "using: " << "Anisotrophy";
+    if(use_p) qDebug() << "using: " << "Planarity";
+    if(use_s) qDebug() << "using: " << "Sphericity";
+    if(use_l) qDebug() << "using: " << "Linearity";
+    if(use_o) qDebug() << "using: " << "Omnivariance";
+    if(use_ee) qDebug() << "using: " << "Eigenentrophy";
+    if(use_rc) qDebug() << "using: " << "Curvature";
+    if(use_odist) qDebug() << "using: " << "Distance from origin";
+    if(use_n_count) qDebug() << "using: " << "Number of neighbours";
+
 
     clock_t action_start = std::clock();
 
@@ -264,11 +309,74 @@ void Markov::randomforest(){
 
     double downsample_elapsed = double(std::clock() - downsample_start) / CLOCKS_PER_SEC;
 
+
+//    clock_t nn_search_start = std::clock();
+//    double total = 0;
+
+//    {
+//        typename pcl::PointCloud<pcl::PointXYZINormal>::ConstPtr cptr(smallcloud_.get(), boost::serialization::null_deleter());
+//        pcl::KdTreeFLANN<pcl::PointXYZINormal> search;
+//        search.setInputCloud(cptr);
+
+//        std::vector<float> kDist;
+//        std::vector<int> kIdxs;
+
+//        for(uint i = 0; i < smallcloud_->size(); i++){
+//            search.radiusSearch(i, 0.15, kIdxs, kDist);
+//            total+=kIdxs.size();
+//        }
+//    }
+
+//    qDebug() << "cloud size" << smallcloud_->size();
+//    qDebug() << "total" << total;
+//    qDebug() << "avg" << double(total)/smallcloud_->size();
+
+//    double nn_search_elapsed = double(std::clock() - nn_search_start) / CLOCKS_PER_SEC;
+//    qDebug() << "time" << nn_search_elapsed << "avg" << double(nn_search_elapsed)/cloud->size();
+
+//    qDebug() << "downsample: " << downsample_elapsed;
+
+    clock_t upsample_start = std::clock();
+
+    std::vector<int> trash;
+    for(int idx = 0; idx < cloud->size(); idx++) {
+        trash.push_back(big_to_small_[idx]);
+    }
+
+    double upsample_elapsed = double(std::clock() - upsample_start) / CLOCKS_PER_SEC;
+
+    qDebug() << "upsample time" << upsample_elapsed << "trash: " << trash.size();
+
+    return;
+
+
+    clock_t density_start = std::clock();
+
+    // density
+
+    std::vector<int> neighbour_count;
+
+    if(use_n_count){
+        pcl::KdTreeFLANN<pcl::PointXYZINormal> search;
+        search.setInputCloud(smallcloud_);
+
+        std::vector<float> kDist;
+        std::vector<int> kIdxs;
+
+        for(uint i = 0; i < smallcloud_->size(); i++){
+            search.radiusSearch(i, density_radius_, kIdxs, kDist);
+            neighbour_count.push_back(kIdxs.size());
+        }
+    }
+
+
+    clock_t density_elapsed = double(std::clock() - density_start) / CLOCKS_PER_SEC;
+
     clock_t pca_start = std::clock();
 
     // PCA
     if(pca_dirty_) {
-        pca_ = getPCA(smallcloud_.get(), pca_radius_, 0);
+        pca_ = getPCA(smallcloud_.get(), pca_radius_, max_nn_);
         pca_dirty_ = false;
     }
 
@@ -294,6 +402,7 @@ void Markov::randomforest(){
     }
 
     double curvature_elapsed = double(std::clock() - curvature_start) / CLOCKS_PER_SEC;
+
 
     // Feature compute
     auto mkFeatureVector = [&](uint idx) {
@@ -345,7 +454,7 @@ void Markov::randomforest(){
         if(use_p)
             vec(++featnum) = (pca[1] - pca[2]) / pca[0];
 
-        // spherity
+        // Sphericity
         if(use_s)
             vec(++featnum) = pca[2] / pca[0];
 
@@ -365,6 +474,13 @@ void Markov::randomforest(){
         if(use_rc)
             vec(++featnum) = pca[0] / (pca[0] + pca[1] + pca[2]);
 
+        if(use_odist)
+            vec(++featnum) = smallcloud_->at(idx).getVector3fMap().norm();
+        if(use_n_count && neighbour_count[idx]) {
+//            vec(++featnum) = double(neighbour_count[idx])/pow(smallcloud_->at(idx).getVector3fMap().norm(), 2);
+            vec(++featnum) = double(neighbour_count[idx]);
+        }
+
         return vec;
     };
 
@@ -374,8 +490,8 @@ void Markov::randomforest(){
 
     // Forest
     hp.maxDepth = tree_depth_;
-    hp.numRandomTests = 1;
-    hp.counterThreshold = 140;
+    hp.numRandomTests = 20;
+    hp.counterThreshold = 140; // Number of samples seen by tree?
     hp.numTrees = tree_count_;
 
     // Experimenter
@@ -526,12 +642,13 @@ void Markov::randomforest(){
     qDebug() << "downsample: " << downsample_elapsed << "\n"
                  << "pca: "<< pca_elapsed << "\n"
                  << "curvature: "<< curvature_elapsed << "\n"
+                 << "density" << density_elapsed << "\n"
                  << "get_selections: "<< get_selections_elapsed << "\n"
                  << "feature_compute: "<< feature_compute_elapsed << "\n"
                  << "train: "<< train_elapsed << "\n"
                  << "classify: "<< classify_elapsed << "\n"
                  << "result_select: "<< result_select_elapsed << "\n"
-                 << "total: "<< action_elapsed;
+                 << "total: "<< action_elapsed << "\n";
 }
 
 

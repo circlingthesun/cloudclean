@@ -13,7 +13,8 @@ target_link_libraries(
     cloudclean_model
     cloudclean_gui
     project
-    featureeval
+    accuracy
+    markov
     ${PCL_LIBRARIES}
 )
 

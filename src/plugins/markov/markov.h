@@ -1,10 +1,13 @@
 #ifndef MARKOV_H
 #define MARKOV_H
 
-#include "pluginsystem/iplugin.h"
-#include "featurelist.h"
 #include <boost/serialization/shared_ptr.hpp>
 #include <pcl/features/principal_curvatures.h>
+
+#include "plugins/markov/export.h"
+#include "pluginsystem/iplugin.h"
+#include "featurelist.h"
+
 class QAction;
 class QWidget;
 class Core;
@@ -20,7 +23,7 @@ class QDockWidget;
 class QDoubleSpinBox;
 class QSpinBox;
 
-class Markov : public IPlugin {
+class MARKOV_API Markov : public IPlugin {
     Q_INTERFACES(IPlugin)
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "za.co.circlingthesun.cloudclean.iplugin" FILE "markov.json")
@@ -32,8 +35,19 @@ class Markov : public IPlugin {
 
     ~Markov();
 
- private:
     void randomforest();
+
+ public:
+    QDoubleSpinBox * pca_radius_spinner_;
+    QDoubleSpinBox * curvature_radius_spinner_;
+    QDoubleSpinBox * octree_cell_size_spinner_;
+    QDoubleSpinBox * density_radius_spinner_;
+
+    QSpinBox * tree_count_spinner_;
+    QSpinBox * tree_depth_spinner_;
+    QSpinBox * max_nn_spinner_;
+
+    FeatureList * feature_list_;
 
  signals:
     void enabling();
@@ -59,15 +73,8 @@ class Markov : public IPlugin {
     QWidget * dock_widget_;
     QDockWidget * dock_;
 
-    FeatureList * feature_list_;
+
     QTableView * feature_view_;
-
-    QDoubleSpinBox * pca_radius_spinner_;
-    QDoubleSpinBox * curvature_radius_spinner_;
-    QDoubleSpinBox * octree_cell_size_spinner_;
-
-    QSpinBox * tree_count_spinner_;
-    QSpinBox * tree_depth_spinner_;
 
     double pca_radius_;
     double curvature_radius_;
@@ -75,6 +82,8 @@ class Markov : public IPlugin {
 
     int tree_count_;
     int tree_depth_;
+    int max_nn_;
+    double density_radius_;
 
     pcl::PointCloud<pcl::PointXYZINormal>::Ptr smallcloud_;
     std::vector<int> big_to_small_;

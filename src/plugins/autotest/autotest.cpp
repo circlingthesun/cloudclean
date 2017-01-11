@@ -1,6 +1,7 @@
 #include "plugins/autotest/autotest.h"
 #include <utility>
 #include <QDebug>
+#include <QCoreApplication>
 #include <QAction>
 #include <QToolBar>
 #include <QWidget>
@@ -9,6 +10,8 @@
 #include <QSlider>
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QDoubleSpinBox>
+#include <QSpinBox>
 #include <QStackedWidget>
 #include <QSettings>
 #include <QDir>
@@ -28,7 +31,8 @@
 #include "pluginsystem/pluginmanager.h"
 
 #include "plugins/project/project.h"
-#include "plugins/featureeval/featureeval.h"
+#include "plugins/markov/markov.h"
+#include "plugins/accuracy/accuracy.h"
 
 QString AutoTest::getName(){
     return "AutoTest";
@@ -43,25 +47,32 @@ void AutoTest::initialize(Core *core){
     mw_ = core_->mw_;
 
     is_enabled_ = false;
-    connect(this, SIGNAL(enabling()), core_, SIGNAL(endEdit()));
+
+    dock_widget_ = new QWidget();
+    dock_ = new QDockWidget();
+
+
+
     enable_ = new QAction(QIcon(":/autotest.png"), "Enable AutoTest", 0);
     enable_->setCheckable(true);
+
     connect(enable_, SIGNAL(triggered()), this, SLOT(enable()));
+}
 
-    mw_->toolbar_->addAction(enable_);
+void AutoTest::initialize2(PluginManager *pm){
+//    project_ = pm->findPlugin<Project>();
+    markov_ = pm->findPlugin<Markov>();
+    accuracy_ = pm->findPlugin<Accuracy>();
 
-    settings_ = new QWidget();
-    QVBoxLayout * layout = new QVBoxLayout(settings_);
-    settings_->setLayout(layout);
+    // Widgets
 
-    mw_->tooloptions_->addWidget(settings_);
 
-    QPushButton * open = new QPushButton("Open test");
+    QPushButton * open_button = new QPushButton("Open test");
+    QPushButton * run_button = new QPushButton("Run test");
 
-    QPushButton * run = new QPushButton("Run test");
-    run->setDisabled(true);
+    run_button->setDisabled(true);
 
-    connect(open, &QPushButton::clicked, [=] (){
+    connect(open_button, &QPushButton::clicked, [=] (){
         QSettings settings;
 
         QString path = settings.value("load/lasttestlocation", QDir::home().absolutePath()).toString();
@@ -72,72 +83,73 @@ void AutoTest::initialize(Core *core){
 
         settings.setValue("load/lasttestlocation", QFileInfo(filename).absolutePath());
         settings.sync();
-        run->setDisabled(false);
+        run_button->setDisabled(false);
         test_path_ = filename;
 
     });
 
-    layout->addWidget(open);
-    layout->addWidget(run);
+    connect(run_button, &QPushButton::clicked, (std::function<void()>) std::bind(&AutoTest::runtests, this));
 
-    connect(run, &QPushButton::clicked, (std::function<void()>) std::bind(&AutoTest::runtest, this));
+//    connect(run_button, &QPushButton::clicked, [&](){
 
-    layout->addStretch();
+//    });
+
+
+    // Toolbar
+    mw_->toolbar_->addAction(enable_);
+
+
+    // Dock
+    QVBoxLayout * dock_layout = new QVBoxLayout();
+
+    dock_layout->addWidget(new QLabel("GAR!"));
+    dock_layout->addWidget(open_button);
+    dock_layout->addWidget(run_button);
+    dock_layout->setStretch(100, 100);
+
+
+    dock_widget_->setLayout(dock_layout);
+    dock_->setWindowTitle(tr("Autotest options"));
+    dock_->setWidget(dock_widget_);
 }
 
-void AutoTest::initialize2(PluginManager *pm){
-    project_ = pm->findPlugin<Project>();
-    feature_eval_ = pm->findPlugin<FeatureEval>();
+std::tuple<float, float, float> AutoTest::runTest(
+        std::vector<std::string> features,
+        float downsample,
+        float curvature_radius,
+        float pca_radius,
+        float density_radius,
+        int pca_max_nn,
+        int tree_count,
+        int tree_depth){
+
+    markov_->pca_radius_spinner_->setValue(pca_radius);
+    markov_->curvature_radius_spinner_->setValue(curvature_radius);
+    markov_->octree_cell_size_spinner_->setValue(downsample);
+    markov_->density_radius_spinner_->setValue(density_radius);
+
+    markov_->tree_count_spinner_->setValue(tree_count);
+    markov_->tree_depth_spinner_->setValue(tree_depth);
+    markov_->max_nn_spinner_->setValue(pca_max_nn);;
+
+    markov_->feature_list_->selectOnly(features);
+
+    QCoreApplication::processEvents(); // Need this for settings to take effect?
+
+    markov_->randomforest();
+
+    float accuracy, precision, recall;
+    std::tie(accuracy, precision, recall) = accuracy_->sample();
+
+    core_->us_->undo();
+
+    QCoreApplication::processEvents();
+
+    qDebug() << "Results" << accuracy << precision <<  recall;
+    return std::make_tuple(accuracy, precision, recall);
 }
 
-void AutoTest::setPermuteAndRun(std::vector<std::pair<QString, QJsonArray>> & params, QString fname, int idx){
-    // end recursion and run
-    if(idx == params.size()){
-        feature_eval_->getFunction(fname)();
-        return;
-    }
-
-    std::pair<QString, QJsonArray> values = params[idx];
-    QString name = values.first;
-    QJsonArray array = values.second;
-
-
-    // STL PERMUTE
-    for(QJsonValueRef valref : array){
-        if(feature_eval_->param_map_.find(name) == feature_eval_->param_map_.end()){
-            qDebug() << "cannot find: " << name;
-        } else {
-            qDebug() << "found: " << name;
-        }
-        qDebug() << "---------------------!!!!!!!!!!!!!!!!!!!!!!";
-
-        if(valref.isObject() && name == "subsample_res"){
-            *(feature_eval_->param_map_[name + ".small"].f) = valref.toObject()["small"].toDouble();
-            *(feature_eval_->param_map_[name + ".big"].f) = valref.toObject()["big"].toDouble();
-        } else {
-            // set parameter
-            if(name.trimmed() == "bins" || name.trimmed() == "max_nn"){
-                *(feature_eval_->param_map_[name].i) = int(valref.toDouble());
-            } else {
-                *(feature_eval_->param_map_[name].f) = valref.toDouble();
-            }
-        }
-
-        // Recurse
-        setPermuteAndRun(params, fname, idx+1);
-    }
-
-}
-
-void AutoTest::runtest() {
-    feature_eval_->visualise_on_ = false;
-    // Setup reporting
-    QFile report_file("report.csv");
-    report_file.open(QIODevice::WriteOnly | QIODevice::Text);
-    QDebug report(&report_file);
-    report.setAutoInsertSpaces(false);
-    feature_eval_->setReportFuction(&report);
-    feature_eval_->reportHeader();
+void AutoTest::runtests() {
 
     qDebug() << "Opening file: " << test_path_;
     QFile file(test_path_);
@@ -152,87 +164,75 @@ void AutoTest::runtest() {
     file.close();
 
     if(doc.isNull()){
-        qDebug() << "No text data: " << err.errorString();
+        qDebug() << "No test data: " << err.errorString();
     }
 
     QJsonObject root = doc.object();
-    QJsonObject features = root["features"].toObject();
+
+    QJsonObject defaults = root["defaults"].toObject();
     QJsonArray tests = root["tests"].toArray();
 
+    // Setup reporting
+    QFile report_file("report.csv");
+    report_file.open(QIODevice::Append | QIODevice::Text);
+    QDebug report(&report_file);
+    report.setAutoInsertSpaces(false);
+
+    report << "File:" << test_path_ << "\n";
+
+//    report << "Feature,downsample,curvature radius,pca radius,density_radius,tree_count,tree_depth,accuracy,precision,recall" << "\n";
+
+    report << "Feature,accuracy,precision,recall" << "\n";
+
     for(QJsonValueRef test : tests){
-        // setup project
         QJsonObject t = test.toObject();
-        QString p = t["project"].toString();
-        project_->load(p);
-        ////////////////
+        QJsonArray featuresArray = t["features"].toArray();
 
-        qDebug() << "Opening project: " << p << " ... ";
+        qDebug() << "Test:" << t["name"].toString();
 
-        QJsonArray correlations = t["correlations"].toArray();
-
-        for(QJsonValueRef correlation : correlations){
-            QJsonObject c = correlation.toObject();
-            QString layer_name = c["layer_name"].toString();
-            QJsonArray feature_names = c["features"].toArray();
-
-            feature_eval_->layer_ = layer_name;
-
-            // Select layer
-            int idx = ll_->getLayerIdxByName(layer_name);
-            if(idx == -1){
-                qDebug() << "Cannot find layer: " << layer_name;
-                continue;
-            }
-            //std::vector<int> layers = {idx};
-            ll_->selectionChanged({idx});
-
-
-            for(QJsonValueRef feature_name : feature_names){
-                QString fname = feature_name.toString();
-                QJsonObject p = features[fname].toObject();
-
-                qDebug() << "Correlating " << fname << " with layer " << layer_name;
-
-                feature_eval_->fname_ = fname;
-                feature_eval_->resetParams();
-
-                // Build list of params
-                std::vector<std::pair<QString, QJsonArray>> params;
-
-                for(QJsonObject::Iterator it = p.begin(); it != p.end(); it++){
-                    params.push_back(std::make_pair(it.key(), it.value().toArray()));
-                }
-
-                // run test
-                setPermuteAndRun(params, fname, 0);
-
-            }
-
-
+        std::vector<std::string> features;
+        for(QJsonValueRef nameRef : featuresArray){
+            features.push_back(nameRef.toString().toStdString());
         }
 
+        QString name = t["name"].toString();
+        float downsample = t.contains("downsample") ? t["downsample"].toDouble() : defaults["downsample"].toDouble();
+        float curvature_radius = t.contains("curvature_radius") ? t["curvature_radius"].toDouble() : defaults["curvature_radius"].toDouble();;
+        float pca_radius = t.contains("pca_radius") ? t["pca_radius"].toDouble() : defaults["pca_radius"].toDouble();;
+        float density_radius = t.contains("downsample") ? t["density_radius"].toDouble() : defaults["density_radius"].toDouble();;
+        int pca_max_nn = t.contains("pca_max_nn") ? t["pca_max_nn"].toInt() : defaults["pca_max_nn"].toInt();;
+        int tree_count = t.contains("tree_count") ? t["tree_count"].toInt() : defaults["tree_count"].toInt();;
+        int tree_depth = t.contains("tree_depth") ? t["tree_depth"].toInt() : defaults["tree_depth"].toInt();;
 
+        float accuracy, precision, recall;
+        std::tie(accuracy, precision, recall) = runTest(
+                features,
+                downsample,
+                curvature_radius,
+                pca_radius,
+                density_radius,
+                pca_max_nn,
+                tree_count,
+                tree_depth);
 
-
-        // clean up project
-        while(ll_->rowCount() > 0){
-            ll_->deleteLayer(0);
-        }
-
-        while(cl_->rowCount() > 0){
-            cl_->removeCloud(0);
-        }
-        //////////////////////
-        report_file.close();
+        report << name << ","
+//                << downsample << ","
+//                << curvature_radius << ","
+//                << pca_radius << ","
+//                << density_radius << ","
+//                << tree_count << ","
+//                << tree_depth << ","
+                << accuracy << ","
+                << precision << ","
+                << recall << "\n";
     }
-    //features;
-    feature_eval_->visualise_on_ = true;
 
+    report_file.close();
 }
 
 void AutoTest::cleanup(){
+    disable();
     mw_->toolbar_->removeAction(enable_);
-    mw_->tooloptions_->removeWidget(settings_);
     delete enable_;
 }
 
@@ -246,20 +246,22 @@ void AutoTest::enable() {
         return;
     }
 
-    mw_->options_dock_->show();
-    mw_->tooloptions_->setCurrentWidget(settings_);
+
     emit enabling();
-    glwidget_->installEventFilter(this);
-    flatview_->installEventFilter(this);
     connect(core_, SIGNAL(endEdit()), this, SLOT(disable()));
+
+    mw_->addDockWidget(Qt::RightDockWidgetArea, dock_);
+    mw_->tabifyDockWidget(mw_->options_dock_, dock_);
+    dock_->show();
+    dock_->raise();
+
     is_enabled_ = true;
 }
 
 void AutoTest::disable(){
     enable_->setChecked(false);
     disconnect(core_, SIGNAL(endEdit()), this, SLOT(disable()));
-    glwidget_->removeEventFilter(this);
-    flatview_->removeEventFilter(this);
+    mw_->removeDockWidget(dock_);
     is_enabled_ = false;
 }
 

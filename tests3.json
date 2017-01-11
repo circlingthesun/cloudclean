@@ -1,0 +1,47 @@
+{
+	"defaults": {
+		"downsample": 0.05,
+		"curvature_radius": 0.25,
+		"pca_radius": 0.25,
+		"density_radius": 0.25,
+		"pca_max_nn": 1000,
+		"tree_count": 100,
+		"tree_depth": 10
+	},
+	"tests": [{
+		"name": "Eigen derivatives r=0.15",
+		"features": [
+			"Linearity",
+			"Planarity",
+			"Sphericity",
+			"Anisotrophy",
+			"Eigenentrophy",
+			"Omnivariance"
+			],
+		"pca_radius": 0.15
+	},
+	{
+		"name": "Eigen derivativesr=0.25",
+		"features": [
+			"Linearity",
+			"Planarity",
+			"Sphericity",
+			"Anisotrophy",
+			"Eigenentrophy",
+			"Omnivariance"
+			],
+		"pca_radius": 0.25
+	},
+	{
+		"name": "Eigen derivatives r=0.5",
+		"features": [
+			"Linearity",
+			"Planarity",
+			"Sphericity",
+			"Anisotrophy",
+			"Eigenentrophy",
+			"Omnivariance"
+			],
+		"pca_radius": 0.5
+	}]
+}

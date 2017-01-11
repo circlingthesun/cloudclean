@@ -148,7 +148,8 @@ bool PointCloud::load_ptx(const char* filename, int decimation_factor) {
     int file_width, file_height;
     fscanf(pfile, "%d %d", &file_width, &file_height);
 
-    qDebug() << "w x h" << file_width << file_width;
+    qDebug() << "w x h" << file_width << file_height;
+    qDebug() << "total" << file_width * file_height;
     assert(file_width);
     assert(file_width);
 
@@ -301,6 +302,8 @@ bool PointCloud::load_ptx(const char* filename, int decimation_factor) {
     this->is_dense = true;
     labels_.resize(this->points.size(), 0);
     flags_.resize(this->points.size(), PointFlags(0));
+
+    qDebug()  << "valid points" << this->points.size();
 
     emit progress(100);
     pc_mutex->unlock();

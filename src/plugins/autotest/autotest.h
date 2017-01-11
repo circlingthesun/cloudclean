@@ -4,6 +4,7 @@
 #include "pluginsystem/iplugin.h"
 class QAction;
 class QWidget;
+class QDockWidget;
 class Core;
 class CloudList;
 class LayerList;
@@ -11,7 +12,8 @@ class FlatView;
 class GLWidget;
 class MainWindow;
 class Project;
-class FeatureEval;
+class Markov;
+class Accuracy;
 
 class AutoTest : public IPlugin {
     Q_INTERFACES(IPlugin)
@@ -21,7 +23,7 @@ class AutoTest : public IPlugin {
     QString getName();
     void initialize(Core * core);
     void initialize2(PluginManager *pm);
-    void setPermuteAndRun(std::vector<std::pair<QString, QJsonArray>> & params, QString fname, int idx);
+    std::tuple<float, float, float> runTest(std::vector<std::__cxx11::string> features, float downsample, float curvature_radius, float pca_radius, float density_radius, int pca_max_nn, int tree_count, int tree_depth);
     void cleanup();
     ~AutoTest();
 
@@ -31,7 +33,7 @@ class AutoTest : public IPlugin {
  private slots:
     void enable();
     void disable();
-    void runtest();
+    void runtests();
 
  private:
     Core * core_;
@@ -42,11 +44,15 @@ class AutoTest : public IPlugin {
     MainWindow * mw_;
 
     QAction * enable_;
-    QWidget * settings_;
+    QWidget * dock_widget_;
     bool is_enabled_;
 
+
     Project * project_;
-    FeatureEval * feature_eval_;
+    Accuracy * accuracy_;
+    Markov * markov_;
+
+    QDockWidget * dock_;
 
     QString test_path_;
 };

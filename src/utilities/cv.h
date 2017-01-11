@@ -11,8 +11,10 @@
 #include <boost/serialization/shared_ptr.hpp>
 
 #include <pcl/common/pca.h>
-#include <pcl/search/flann_search.h>
-#include <pcl/kdtree/kdtree_flann.h>
+//#include <pcl/search/flann_search.h>
+//#include <pcl/kdtree/kdtree_flann.h>
+
+#include <pcl/search/kdtree.h>
 
 #include "model/pointcloud.h"
 #include "utilities/export.h"
@@ -87,6 +89,9 @@ boost::shared_ptr<std::vector<Eigen::Vector3f> > getPCA(pcl::PointCloud<PointT> 
     kIdxs = boost::shared_ptr <std::vector<int> >(new std::vector<int>);
     std::vector<float> kDist;
 
+    pcl::PCA<PointT> pcEstimator(true);
+    pcEstimator.setInputCloud (cptr);
+
     // For every point
     for(uint i = 0; i < cloud->size(); i++){
 
@@ -103,8 +108,6 @@ boost::shared_ptr<std::vector<Eigen::Vector3f> > getPCA(pcl::PointCloud<PointT> 
             continue;
         }
 
-        pcl::PCA<PointT> pcEstimator(true);
-        pcEstimator.setInputCloud (cptr);
         pcEstimator.setIndices(kIdxs);
         (*eigen_vals)[i] = pcEstimator.getEigenValues();
     }

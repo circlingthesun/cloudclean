@@ -38,13 +38,11 @@ void Accuracy::initialize(Core *core){
     mw_ = core_->mw_;
 
     is_enabled_ = false;
-    //connect(this, SIGNAL(enabling()), core_, SIGNAL(endEdit()));
     enable_ = new QAction(QIcon(":/accuracy.png"), "Enable Accuracy", 0);
     enable_->setCheckable(true);
     connect(enable_, SIGNAL(triggered()), this, SLOT(enable()));
 
     mw_->toolbar_->addAction(enable_);
-
 
     QVBoxLayout * dock_layout = new QVBoxLayout();
     QHBoxLayout * dock_layout2 = new QHBoxLayout();
@@ -228,14 +226,14 @@ void Accuracy::save(){
 
 }
 
-void Accuracy::sample() {
+std::tuple<float, float, float> Accuracy::sample() {
 
     if(!cl_->active_){
-        return;
+         return std::make_tuple(-1.0f, -1.0f, -1.0f);
     }
 
     if(!target_.size()){
-        return;
+         return std::make_tuple(-1.0f, -1.0f, -1.0f);
     }
 
     auto is_label_in_set = [=] (uint16_t label, std::vector<boost::weak_ptr<Layer> > & layers){
@@ -284,8 +282,6 @@ void Accuracy::sample() {
     precision = std::isnan(precision) ? 0 : precision;
     recall = std::isnan(recall) ? 0 : recall;
 
-//    accuracy_text_->setText(QString::number(fscore) + " " + QString::number(precision) + " ");
-
     accuracy_text_->setText(QString("%1 (p: %2 r: %3)").arg(fscore).arg(precision).arg(recall));
 
     int seconds = time_.elapsed()/1000;
@@ -307,7 +303,7 @@ void Accuracy::sample() {
         accuracy_text_->setStyleSheet("QLineEdit { background: #FFFFFF;}");
     }
 
-
+    return std::make_tuple(fscore, precision, recall);
 }
 
 void Accuracy::cleanup(){

@@ -50,6 +50,22 @@ class FeatureList : public QAbstractListModel {
         return false;
     }
 
+    void selectOnly(std::vector<std::string> feature_names) {
+        beginResetModel();
+        for(Feature & f : features_) {
+            bool found = false;
+            for(std::string name : feature_names) {
+                if(name == f.name_.toStdString()) {
+                    found = true;
+                }
+            }
+
+            f.enabled_ = found;
+        }
+
+        endResetModel();
+    }
+
     std::vector<Feature> features_ = {
         Feature("X", 0),
         Feature("Y", 1),
@@ -65,11 +81,13 @@ class FeatureList : public QAbstractListModel {
         Feature("Curvature 2", 11),
         Feature("Anisotrophy", 12),
         Feature("Planarity", 13),
-        Feature("Spherity", 14),
+        Feature("Sphericity", 14),
         Feature("Linearity", 15),
         Feature("Omnivariance", 16),
-        Feature("Rusu Curvature", 17),
-        Feature("Eigen entrophy", 18),
+        Feature("Curvature", 17),
+        Feature("Eigenentrophy", 18),
+        Feature("Distance from origin", 19),
+        Feature("Number of neighbours", 20),
     };
  signals:
 

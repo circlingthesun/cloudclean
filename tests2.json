@@ -1,0 +1,144 @@
+{
+	"defaults": {
+		"downsample": 0.15,
+		"curvature_radius": 0.25,
+		"pca_radius": 0.25,
+		"density_radius": 0.25,
+		"pca_max_nn": 1000,
+		"tree_count": 100,
+		"tree_depth": 10
+	},
+	"tests": [{
+		"name": "Eigenvalues r=0.25",
+		"features": ["Eigen 1", "Eigen 2", "Eigen 3"],
+		"pca_radius": 0.25
+	}, {
+		"name": "Eigenvalues r=0.5",
+		"features": ["Eigen 1", "Eigen 2", "Eigen 3"],
+		"pca_radius": 0.5
+	}, {
+		"name": "Eigenvalues r=0.75",
+		"features": ["Eigen 1", "Eigen 2", "Eigen 3"],
+		"pca_radius": 0.75
+	}, {
+		"name": "Linearity r=0.25",
+		"features": ["Linearity"],
+		"pca_radius": 0.25
+	}, {
+		"name": "Linearity r=0.5",
+		"features": ["Linearity"],
+		"pca_radius": 0.5
+	}, {
+		"name": "Linearity r=0.75",
+		"features": ["Linearity"],
+		"pca_radius": 0.75
+	}, {
+		"name": "Planarity  r=0.25",
+		"features": ["Planarity"],
+		"pca_radius": 0.25
+	}, {
+		"name": "Planarity  r=0.5",
+		"features": ["Planarity"],
+		"pca_radius": 0.5
+	}, {
+		"name": "Planarity  r=0.75",
+		"features": ["Planarity"],
+		"pca_radius": 0.75
+	}, {
+		"name": "Sphericity r=0.5",
+		"features": ["Sphericity"],
+		"pca_radius": 0.25
+	}, {
+		"name": "Sphericity r=0.5",
+		"features": ["Sphericity"],
+		"pca_radius": 0.5
+	}, {
+		"name": "Sphericity r=0.75",
+		"features": ["Sphericity"],
+		"pca_radius": 0.75
+	}, {
+		"name": "Anisotrophy r=0.25",
+		"features": ["Anisotrophy"],
+		"pca_radius": 0.25
+	}, {
+		"name": "Anisotrophy r=0.5",
+		"features": ["Anisotrophy"],
+		"pca_radius": 0.5
+	}, {
+		"name": "Anisotrophy r=0.75",
+		"features": ["Anisotrophy"],
+		"pca_radius": 0.75
+	}, {
+		"name": "Eigenentrophy r=0.25",
+		"features": ["Eigenentrophy"],
+		"pca_radius": 0.25
+	}, {
+		"name": "Eigenentrophy r=0.5",
+		"features": ["Eigenentrophy"],
+		"pca_radius": 0.5
+	}, {
+		"name": "Eigenentrophy r=0.75",
+		"features": ["Eigenentrophy"],
+		"pca_radius": 0.75
+	}, {
+		"name": "Omnivariance r=0.25",
+		"features": ["Omnivariance"],
+		"pca_radius": 0.25
+	}, {
+		"name": "Omnivariance r=0.5",
+		"features": ["Omnivariance"],
+		"pca_radius": 0.5
+	}, {
+		"name": "Omnivariance r=0.75",
+		"features": ["Omnivariance"],
+		"pca_radius": 0.75
+	}, {
+		"name": "Principal curvatures  r=0.25",
+		"features": ["Curvature 1", "Curvature 2"],
+		"curvature_radius": 0.25
+	}, {
+		"name": "Principal curvatures  r=0.5",
+		"features": ["Curvature 1", "Curvature 2"],
+		"curvature_radius": 0.5
+	}, {
+		"name": "Principal curvatures  r=0.75",
+		"features": ["Curvature 1", "Curvature 2"],
+		"curvature_radius": 0.75
+	}, {
+		"name": "Curvature r=0.25",
+		"features": ["Curvature"],
+		"pca_radius": 0.25
+	}, {
+		"name": "Curvature r=0.5",
+		"features": ["Curvature"],
+		"pca_radius": 0.5
+	}, {
+		"name": "Curvature r=0.75",
+		"features": ["Curvature"],
+		"pca_radius": 0.75
+	}, {
+		"name": "Density r=0.25",
+		"features": ["Number of neighbours"],
+		"density_radius": 0.25
+	}, {
+		"name": "Density r=0.5",
+		"features": ["Number of neighbours"],
+		"density_radius": 0.5
+	}, {
+		"name": "Density r=0.75",
+		"features": ["Number of neighbours"],
+		"density_radius": 0.75
+	}, {
+		"name": "Distance from origin",
+		"features": ["Distance from origin"]
+	}, {
+		"name": "XYZ",
+		"features": ["X", "Y", "Z"]
+	}, {
+		"name": "Intensity",
+		"features": ["Intensity"]
+	}, {
+		"name": "Normals",
+		"features": ["X Normal", "Y Normal", "Z Normal"]
+	}]
+}
