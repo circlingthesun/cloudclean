@@ -1,0 +1,74 @@
+{
+	"defaults": {
+		"downsample": 0.05,
+		"curvature_radius": 0.25,
+		"pca_radius": 0.25,
+		"density_radius": 0.15,
+		"pca_max_nn": 10000,
+		"tree_count": 100,
+		"tree_depth": 10
+	},
+	"tests": [
+		{
+		"name": "PC + Eigenvalues + Intensity + Normals + XYZ",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Eigen 1",
+			"Eigen 2",
+			"Eigen 3",
+			"Intensity",
+			"X Normal",
+			"Y Normal",
+			"Z Normal",
+			"X",
+			"Y",
+			"Z"
+			]
+		},
+		{
+		"name": "Eigenvalues + Intensity + Normals + XYZ",
+		"features": [
+			"Eigen 1",
+			"Eigen 2",
+			"Eigen 3",
+			"Intensity",
+			"X Normal",
+			"Y Normal",
+			"Z Normal",
+			"X",
+			"Y",
+			"Z"
+			]
+		},
+		{
+		"name": "PC + Intensity + Normals + XYZ",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Eigen 1",
+			"Eigen 2",
+			"Eigen 3",
+			"Intensity",
+			"X Normal",
+			"Y Normal",
+			"Z Normal",
+			"X",
+			"Y",
+			"Z"
+			]
+		},
+		{
+		"name": "PC + Intensity + XYZ",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Intensity",
+			"X",
+			"Y",
+			"Z"
+			]
+		}
+
+	]
+}

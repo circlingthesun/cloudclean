@@ -235,10 +235,22 @@ void Markov::disable() {
     enabled_ = false;
 }
 
-void Markov::randomforest(){
+std::tuple<
+    double,
+    double,
+    double,
+    double,
+    double,
+    double,
+    double,
+    double,
+    double,
+    double,
+    double>
+Markov::randomforest(){
     boost::shared_ptr<PointCloud> cloud = core_->cl_->active_;
     if(cloud == nullptr)
-        return;
+        return std::make_tuple(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
 //    pca_dirty_ = true;
 //    curvatures_dirty_ = true;
@@ -336,18 +348,18 @@ void Markov::randomforest(){
 
 //    qDebug() << "downsample: " << downsample_elapsed;
 
-    clock_t upsample_start = std::clock();
+//    clock_t upsample_start = std::clock();
 
-    std::vector<int> trash;
-    for(int idx = 0; idx < cloud->size(); idx++) {
-        trash.push_back(big_to_small_[idx]);
-    }
+//    std::vector<int> trash;
+//    for(int idx = 0; idx < cloud->size(); idx++) {
+//        trash.push_back(big_to_small_[idx]);
+//    }
 
-    double upsample_elapsed = double(std::clock() - upsample_start) / CLOCKS_PER_SEC;
+//    double upsample_elapsed = double(std::clock() - upsample_start) / CLOCKS_PER_SEC;
 
-    qDebug() << "upsample time" << upsample_elapsed << "trash: " << trash.size();
+//    qDebug() << "upsample time" << upsample_elapsed << "trash: " << trash.size();
 
-    return;
+//    return;
 
 
     clock_t density_start = std::clock();
@@ -519,7 +531,7 @@ void Markov::randomforest(){
 
     if(selection_sources.size() < 2) {
         qDebug() << "Not enough data";
-        return;
+        return std::make_tuple(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     }
 
     // Creating the train data
@@ -582,7 +594,7 @@ void Markov::randomforest(){
 
     if(dataset_train.m_numSamples < 10){
         qDebug() << "Not enough samples";
-        return;
+        return std::make_tuple(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     }
 
     double feature_compute_elapsed = double(std::clock() - feature_compute_start) / CLOCKS_PER_SEC;
@@ -598,16 +610,27 @@ void Markov::randomforest(){
     Result invalid(8);
     invalid.prediction = -1;
 
-    clock_t classify_start = std::clock();
+    clock_t feature_compute_2_start = std::clock();
 
     std::vector<Result> results(smallcloud_->points.size(), invalid);
+
+    std::vector<Sample> point_features;
 
     for(size_t idx = 0; idx < smallcloud_->points.size(); ++idx) {
         Sample sample;
         sample.id = idx;
         sample.w = 1.0;
         sample.x = mkFeatureVector(idx);
-        model.eval(sample, results[idx]);
+        point_features.push_back(sample);
+
+    }
+
+    double feature_compute_2_elapsed = double(std::clock() - feature_compute_2_start) / CLOCKS_PER_SEC;
+
+    clock_t classify_start = std::clock();
+
+    for(size_t idx = 0; idx < smallcloud_->points.size(); ++idx) {
+        model.eval(point_features[idx], results[idx]);
     }
 
     double classify_elapsed = double(std::clock() - classify_start) / CLOCKS_PER_SEC;
@@ -646,9 +669,23 @@ void Markov::randomforest(){
                  << "get_selections: "<< get_selections_elapsed << "\n"
                  << "feature_compute: "<< feature_compute_elapsed << "\n"
                  << "train: "<< train_elapsed << "\n"
+                 << "feature_compute_2" << feature_compute_2_elapsed << "\n"
                  << "classify: "<< classify_elapsed << "\n"
                  << "result_select: "<< result_select_elapsed << "\n"
                  << "total: "<< action_elapsed << "\n";
+
+    return std::make_tuple(
+                downsample_elapsed,
+                pca_elapsed,
+                curvature_elapsed,
+                density_elapsed,
+                get_selections_elapsed,
+                feature_compute_elapsed,
+                train_elapsed,
+                feature_compute_2_elapsed,
+                classify_elapsed,
+                result_select_elapsed,
+                action_elapsed);
 }
 
 

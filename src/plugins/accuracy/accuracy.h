@@ -24,6 +24,7 @@ class QLabel;
 class QDoubleSpinBox;
 class QDockWidget;
 class QPushButton;
+class QListWidget;
 
 class ACCURACY_API Accuracy : public IPlugin {
     Q_INTERFACES(IPlugin)
@@ -84,6 +85,9 @@ class ACCURACY_API Accuracy : public IPlugin {
     bool started_ = false;
 
     std::vector<std::tuple<int, float, float, float>> time_accuracy_precision_recall_;
+
+public:
+    QListWidget * target_layers_;
 };
 
 #endif  // ACCURACY_H

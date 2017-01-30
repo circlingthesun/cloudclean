@@ -1,0 +1,190 @@
+{
+	"scans": [
+		{
+			"path": "/home/rickert/testdata/featureeval/noise.ccp",
+			"targetLayerName": "noise",
+			"resultSelection": 0
+		},
+		{
+			"path": "/home/rickert/testdata/featureeval/people_facades_ground.ccp",
+			"targetLayerName": "people",
+			"resultSelection": 1
+		},
+		{
+			"path": "/home/rickert/testdata/featureeval/tools.ccp",
+			"targetLayerName": "tools",
+			"resultSelection": 0
+		},
+		{
+			"path": "/home/rickert/testdata/featureeval/tree_ground-facade.ccp",
+			"targetLayerName": "New Layer 37",
+			"resultSelection": 1
+		}
+	],
+	"defaults": {
+		"downsample": 0.02,
+		"curvature_radius": 0.2,
+		"pca_radius": 0.2,
+		"density_radius": 0.2,
+		"pca_max_nn": 1000,
+		"tree_count": 100,
+		"tree_depth": 10
+	},
+	"tests": [{
+		"name": "Eigenvalues r=0.1",
+		"features": ["Eigen 1", "Eigen 2", "Eigen 3"],
+		"pca_radius": 0.1
+	}, {
+		"name": "Eigenvalues r=0.2",
+		"features": ["Eigen 1", "Eigen 2", "Eigen 3"],
+		"pca_radius": 0.2
+	}, {
+		"name": "Eigenvalues r=0.3",
+		"features": ["Eigen 1", "Eigen 2", "Eigen 3"],
+		"pca_radius": 0.3
+	}, {
+		"name": "Eigenvalues r=0.4",
+		"features": ["Eigen 1", "Eigen 2", "Eigen 3"],
+		"pca_radius": 0.4
+	}, {
+		"name": "Linearity r=0.10",
+		"features": ["Linearity"],
+		"pca_radius": 0.1
+	}, {
+		"name": "Linearity r=0.2",
+		"features": ["Linearity"],
+		"pca_radius": 0.2
+	}, {
+		"name": "Linearity r=0.3",
+		"features": ["Linearity"],
+		"pca_radius": 0.3
+	}, {
+		"name": "Linearity r=0.4",
+		"features": ["Linearity"],
+		"pca_radius": 0.4
+	}, {
+		"name": "Planarity  r=0.1",
+		"features": ["Planarity"],
+		"pca_radius": 0.1
+	}, {
+		"name": "Planarity  r=0.2",
+		"features": ["Planarity"],
+		"pca_radius": 0.2
+	}, {
+		"name": "Planarity  r=0.3",
+		"features": ["Planarity"],
+		"pca_radius": 0.3
+	}, {
+		"name": "Planarity  r=0.4",
+		"features": ["Planarity"],
+		"pca_radius": 0.4
+	}, {
+		"name": "Sphericity r=0.1",
+		"features": ["Sphericity"],
+		"pca_radius": 0.1
+	}, {
+		"name": "Sphericity r=0.2",
+		"features": ["Sphericity"],
+		"pca_radius": 0.2
+	}, {
+		"name": "Sphericity r=0.3",
+		"features": ["Sphericity"],
+		"pca_radius": 0.3
+	}, {
+		"name": "Sphericity r=0.4",
+		"features": ["Sphericity"],
+		"pca_radius": 0.4
+	}, {
+		"name": "Anisotrophy r=0.1",
+		"features": ["Anisotrophy"],
+		"pca_radius": 0.1
+	}, {
+		"name": "Anisotrophy r=0.2",
+		"features": ["Anisotrophy"],
+		"pca_radius": 0.2
+	}, {
+		"name": "Anisotrophy r=0.3",
+		"features": ["Anisotrophy"],
+		"pca_radius": 0.3
+	}, {
+		"name": "Anisotrophy r=0.4",
+		"features": ["Anisotrophy"],
+		"pca_radius": 0.4
+	}, {
+		"name": "Eigenentrophy r=0.1",
+		"features": ["Eigenentrophy"],
+		"pca_radius": 0.1
+	}, {
+		"name": "Eigenentrophy r=0.2",
+		"features": ["Eigenentrophy"],
+		"pca_radius": 0.2
+	}, {
+		"name": "Eigenentrophy r=0.3",
+		"features": ["Eigenentrophy"],
+		"pca_radius": 0.3
+	}, {
+		"name": "Eigenentrophy r=0.4",
+		"features": ["Eigenentrophy"],
+		"pca_radius": 0.4
+	}, {
+		"name": "Omnivariance r=0.1",
+		"features": ["Omnivariance"],
+		"pca_radius": 0.1
+	}, {
+		"name": "Omnivariance r=0.2",
+		"features": ["Omnivariance"],
+		"pca_radius": 0.2
+	}, {
+		"name": "Omnivariance r=0.3",
+		"features": ["Omnivariance"],
+		"pca_radius": 0.3
+	}, {
+		"name": "Omnivariance r=0.4",
+		"features": ["Omnivariance"],
+		"pca_radius": 0.4
+	}, {
+		"name": "Principal curvatures  r=0.1",
+		"features": ["Curvature 1", "Curvature 2"],
+		"curvature_radius": 0.1
+	}, {
+		"name": "Principal curvatures  r=0.2",
+		"features": ["Curvature 1", "Curvature 2"],
+		"curvature_radius": 0.25
+	}, {
+		"name": "Principal curvatures  r=0.3",
+		"features": ["Curvature 1", "Curvature 2"],
+		"curvature_radius": 0.3
+	}, {
+		"name": "Principal curvatures  r=0.4",
+		"features": ["Curvature 1", "Curvature 2"],
+		"curvature_radius": 0.4
+	}, {
+		"name": "Curvature r=0.1",
+		"features": ["Curvature"],
+		"pca_radius": 0.1
+	}, {
+		"name": "Curvature r=0.2",
+		"features": ["Curvature"],
+		"pca_radius": 0.2
+	}, {
+		"name": "Curvature r=0.3",
+		"features": ["Curvature"],
+		"pca_radius": 0.3
+	}, {
+		"name": "Curvature r=0.4",
+		"features": ["Curvature"],
+		"pca_radius": 0.4
+	}, {
+		"name": "Distance from origin",
+		"features": ["Distance from origin"]
+	}, {
+		"name": "XYZ",
+		"features": ["X", "Y", "Z"]
+	}, {
+		"name": "Intensity",
+		"features": ["Intensity"]
+	}, {
+		"name": "Normals",
+		"features": ["X Normal", "Y Normal", "Z Normal"]
+	}]
+}

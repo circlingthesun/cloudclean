@@ -35,7 +35,7 @@ class MARKOV_API Markov : public IPlugin {
 
     ~Markov();
 
-    void randomforest();
+    std::tuple<double, double, double, double, double, double, double, double, double, double, double> randomforest();
 
  public:
     QDoubleSpinBox * pca_radius_spinner_;

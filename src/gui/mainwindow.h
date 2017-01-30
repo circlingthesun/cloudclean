@@ -50,6 +50,9 @@ class GUI_API MainWindow : public QMainWindow {
         tabs_->removeTab(idx);
     }
 
+
+    void reset();
+
  public slots:
     void loadFile();
     void saveLayer();

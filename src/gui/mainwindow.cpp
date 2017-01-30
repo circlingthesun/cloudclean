@@ -141,14 +141,7 @@ MainWindow::MainWindow(QUndoStack *us, CloudList * cl, LayerList * ll, QWidget *
     //file_menu_->addAction(save);
 
     QAction * reset = new QAction(tr("Reset"), this);
-    connect(reset, &QAction::triggered, [this](){
-        ll_->reset();
-        gld_->reloadColorLookupBuffer();
-        for(boost::shared_ptr<PointCloud> cloud : cl_->clouds_) {
-            gld_->deleteCloud(cloud);
-        }
-        cl_->reset();
-    });
+    connect(reset, &QAction::triggered, this, &MainWindow::reset);
 
     file_menu_->addAction(reset);
 
@@ -342,6 +335,14 @@ MainWindow::~MainWindow() {
     delete gld_;
 }
 
+void MainWindow::reset() {
+    ll_->reset();
+    gld_->reloadColorLookupBuffer();
+    for(boost::shared_ptr<PointCloud> cloud : cl_->clouds_) {
+        gld_->deleteCloud(cloud);
+    }
+    cl_->reset();
+}
 
 void MainWindow::setSelectMask(uint8_t mask){
     int pos = 0;

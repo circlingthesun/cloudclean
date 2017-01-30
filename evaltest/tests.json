@@ -1,7 +1,13 @@
 {
+	"scans": [
+		"/home/rickert/testdata/featureeval/noise.ccp",
+		"/home/rickert/testdata/featureeval/people_facades_ground.ccp",
+		"/home/rickert/testdata/featureeval/tools.ccp",
+		"/home/rickert/testdata/featureeval/tree_ground-facade.ccp"
+	],
 	"defaults": {
 		"downsample": 0.05,
-		"curvature_radius": 0.25,
+		"curvature_radius": 0.2,
 		"pca_radius": 0.25,
 		"density_radius": 0.25,
 		"pca_max_nn": 1000,
@@ -124,10 +130,6 @@
 		"name": "Density r=0.25",
 		"features": ["Number of neighbours"],
 		"density_radius": 0.25
-	}, {
-		"name": "Density r=0.5",
-		"features": ["Number of neighbours"],
-		"density_radius": 0.5
 	}, {
 		"name": "Distance from origin",
 		"features": ["Distance from origin"]

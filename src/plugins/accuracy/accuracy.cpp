@@ -48,8 +48,8 @@ void Accuracy::initialize(Core *core){
     QHBoxLayout * dock_layout2 = new QHBoxLayout();
 
     dock_layout->addWidget(new QLabel("Target:"));
-    QListWidget * l1 = new QListWidget();
-    dock_layout->addWidget(l1);
+    target_layers_ = new QListWidget();
+    dock_layout->addWidget(target_layers_);
     QHBoxLayout * split1 = new QHBoxLayout();
     dock_layout->addLayout(split1);
     QPushButton * add1 = new QPushButton("Add selected layers");
@@ -90,14 +90,14 @@ void Accuracy::initialize(Core *core){
             }
             if(!found){
                 target_.push_back(s);
-                l1->addItem(s.lock()->getName());
+                target_layers_->addItem(s.lock()->getName());
             }
         }
     });
 
 
     connect(clear1, &QPushButton::clicked, [=] (){
-        l1->clear();
+        target_layers_->clear();
         target_.clear();
     });
 

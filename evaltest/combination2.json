@@ -1,0 +1,425 @@
+{
+	"defaults": {
+		"downsample": 0.05,
+		"curvature_radius": 0.25,
+		"pca_radius": 0.25,
+		"density_radius": 0.15,
+		"pca_max_nn": 10000,
+		"tree_count": 100,
+		"tree_depth": 10
+	},
+	"tests": [
+		{
+		"name": "PC + Eigenvalues",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Eigen 1",
+			"Eigen 2",
+			"Eigen 3"
+			]
+		},
+		{
+		"name": "PC + Intensity",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Intensity"
+			]
+		},
+		{
+		"name": "PC + Eigenvalue derivatives",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Linearity",
+			"Planarity",
+			"Sphericity",
+			"Anisotrophy",
+			"Eigenentrophy",
+			"Omnivariance"
+			]
+		},
+		{
+		"name": "PC + Normals",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"X Normal",
+			"Y Normal",
+			"Z Normal"
+			]
+		},
+		{
+		"name": "PC + Density",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Density"
+			]
+		},
+
+
+
+
+
+		{
+		"name": "PC + Eigenvalues + Intensity",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Eigen 1",
+			"Eigen 2",
+			"Eigen 3",
+			"Intensity"
+			]
+		},
+		{
+		"name": "PC + Eigenvalue derivatives + Intensity",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Linearity",
+			"Planarity",
+			"Sphericity",
+			"Anisotrophy",
+			"Eigenentrophy",
+			"Omnivariance",
+			"Intensity"
+			]
+		},
+		{
+		"name": "PC + Normals + Intensity",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"X Normal",
+			"Y Normal",
+			"Z Normal",
+			"Intensity"
+			]
+		},
+		{
+		"name": "PC + Density + Intensity",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Density",
+			"Intensity"
+			]
+		},
+
+
+
+
+
+		{
+		"name": "PC + Eigenvalues + Intensity + Eigenvalue derivatives",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Eigen 1",
+			"Eigen 2",
+			"Eigen 3",
+			"Intensity",
+			"Linearity",
+			"Planarity",
+			"Sphericity",
+			"Anisotrophy",
+			"Eigenentrophy",
+			"Omnivariance"
+			]
+		},
+		{
+		"name": "PC + Normals + Intensity + Eigenvalue derivatives",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"X Normal",
+			"Y Normal",
+			"Z Normal",
+			"Intensity",
+                        "Linearity",
+			"Planarity",
+			"Sphericity",
+			"Anisotrophy",
+			"Eigenentrophy",
+			"Omnivariance"
+			]
+		},
+		{
+		"name": "PC + Density + Intensity + Eigenvalue derivatives",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Density",
+			"Intensity",
+			"Linearity",
+			"Planarity",
+			"Sphericity",
+			"Anisotrophy",
+			"Eigenentrophy",
+			"Omnivariance"
+			]
+		},
+
+
+
+
+
+		{
+		"name": "PC + Eigenvalues + Intensity + Eigenvalue derivatives + Normals",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Eigen 1",
+			"Eigen 2",
+			"Eigen 3",
+			"Intensity",
+			"Linearity",
+			"Planarity",
+			"Sphericity",
+			"Anisotrophy",
+			"Eigenentrophy",
+			"Omnivariance",
+			"X Normal",
+			"Y Normal",
+			"Z Normal"
+			]
+		},
+		{
+		"name": "PC + Density + Intensity + Eigenvalue derivatives",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Density",
+			"Intensity",
+			"Linearity",
+			"Planarity",
+			"Sphericity",
+			"Anisotrophy",
+			"Eigenentrophy",
+			"Omnivariance",
+			"X Normal",
+			"Y Normal",
+			"Z Normal"
+			]
+		},
+
+
+
+		
+        {
+		"name": "PC + Eigenvalues + Intensity + Eigenvalue derivatives + Normals + Density",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Eigen 1",
+			"Eigen 2",
+			"Eigen 3",
+			"Intensity",
+			"Linearity",
+			"Planarity",
+			"Sphericity",
+			"Anisotrophy",
+			"Eigenentrophy",
+			"Omnivariance",
+			"X Normal",
+			"Y Normal",
+			"Z Normal",
+			"Density"
+			]
+		},
+
+
+
+         {
+		"name": "PC + Eigenvalues + Intensity + Eigenvalue derivatives + Normals + Density + XYZ",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Eigen 1",
+			"Eigen 2",
+			"Eigen 3",
+			"Intensity",
+			"Linearity",
+			"Planarity",
+			"Sphericity",
+			"Anisotrophy",
+			"Eigenentrophy",
+			"Omnivariance",
+			"X Normal",
+			"Y Normal",
+			"Z Normal",
+			"Density",
+			"X",
+			"Y",
+			"Z"
+			]
+		},
+		
+
+
+		{
+		"name": "PC + Eigenvalues + Intensity + Eigenvalue derivatives + Normals + Density + XYZ + Distance from origin",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Eigen 1",
+			"Eigen 2",
+			"Eigen 3",
+			"Intensity",
+			"Linearity",
+			"Planarity",
+			"Sphericity",
+			"Anisotrophy",
+			"Eigenentrophy",
+			"Omnivariance",
+			"X Normal",
+			"Y Normal",
+			"Z Normal",
+			"Density",
+			"X",
+			"Y",
+			"Z",
+			"Distance from origin"
+			]
+		},
+
+
+		
+		{
+		"name": "PC + Eigenvalues + Intensity + Eigenvalue derivatives + Normals + Density + XYZ + Distance from origin + Curvature",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Eigen 1",
+			"Eigen 2",
+			"Eigen 3",
+			"Intensity",
+			"Linearity",
+			"Planarity",
+			"Sphericity",
+			"Anisotrophy",
+			"Eigenentrophy",
+			"Omnivariance",
+			"X Normal",
+			"Y Normal",
+			"Z Normal",
+			"Density",
+			"X",
+			"Y",
+			"Z",
+			"Distance from origin",
+			"Curvature"
+			]
+		},
+
+
+
+		{
+		"name": "Eigenvalues + Intensity + Eigenvalue derivatives + Normals + Density + XYZ + Distance from origin + Curvature",
+		"features": [
+			"Eigen 1",
+			"Eigen 2",
+			"Eigen 3",
+			"Intensity",
+			"Linearity",
+			"Planarity",
+			"Sphericity",
+			"Anisotrophy",
+			"Eigenentrophy",
+			"Omnivariance",
+			"X Normal",
+			"Y Normal",
+			"Z Normal",
+			"Density",
+			"X",
+			"Y",
+			"Z",
+			"Distance from origin",
+			"Curvature"
+			]
+		},
+
+
+		{
+		"name": "PC + Eigenvalues + Intensity + Eigenvalue derivatives + Normals + Density + XYZ + Curvature",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Eigen 1",
+			"Eigen 2",
+			"Eigen 3",
+			"Intensity",
+			"Linearity",
+			"Planarity",
+			"Sphericity",
+			"Anisotrophy",
+			"Eigenentrophy",
+			"Omnivariance",
+			"X Normal",
+			"Y Normal",
+			"Z Normal",
+			"Density",
+			"X",
+			"Y",
+			"Z",
+			"Curvature"
+			]
+		},
+
+
+		{
+		"name": "PC + Eigenvalues + Intensity + Eigenvalue derivatives + Normals + XYZ + Curvature",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Eigen 1",
+			"Eigen 2",
+			"Eigen 3",
+			"Intensity",
+			"Linearity",
+			"Planarity",
+			"Sphericity",
+			"Anisotrophy",
+			"Eigenentrophy",
+			"Omnivariance",
+			"X Normal",
+			"Y Normal",
+			"Z Normal",
+			"X",
+			"Y",
+			"Z",
+			"Curvature"
+			]
+		},
+
+
+		{
+		"name": "PC + Eigenvalues + Intensity + Eigenvalue derivatives + Normals + XYZ",
+		"features": [
+			"Curvature 1",
+			"Curvature 2",
+			"Eigen 1",
+			"Eigen 2",
+			"Eigen 3",
+			"Intensity",
+			"Linearity",
+			"Planarity",
+			"Sphericity",
+			"Anisotrophy",
+			"Eigenentrophy",
+			"Omnivariance",
+			"X Normal",
+			"Y Normal",
+			"Z Normal",
+			"X",
+			"Y",
+			"Z"
+			]
+		}
+
+
+	]
+}

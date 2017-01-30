@@ -14,6 +14,7 @@ class MainWindow;
 class Project;
 class Markov;
 class Accuracy;
+class QDoubleSpinBox;
 
 class AutoTest : public IPlugin {
     Q_INTERFACES(IPlugin)
@@ -23,8 +24,9 @@ class AutoTest : public IPlugin {
     QString getName();
     void initialize(Core * core);
     void initialize2(PluginManager *pm);
-    std::tuple<float, float, float> runTest(std::vector<std::__cxx11::string> features, float downsample, float curvature_radius, float pca_radius, float density_radius, int pca_max_nn, int tree_count, int tree_depth);
+    std::tuple<float, float, float, double,double,double,double,double,double,double,double,double,double,double> runTest(std::vector<std::__cxx11::string> features, float downsample, float curvature_radius, float pca_radius, float density_radius, int pca_max_nn, int tree_count, int tree_depth);
     void cleanup();
+    void knntest();
     ~AutoTest();
 
  signals:
@@ -47,6 +49,8 @@ class AutoTest : public IPlugin {
     QWidget * dock_widget_;
     bool is_enabled_;
 
+    QDoubleSpinBox * radius_spinner_;
+    float radius_;
 
     Project * project_;
     Accuracy * accuracy_;
