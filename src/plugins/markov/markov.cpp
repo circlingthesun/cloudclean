@@ -45,12 +45,14 @@ void Markov::initialize(Core *core){
     flatview_ = core_->mw_->flatview_;
     mw_ = core_->mw_;
 
-    pca_radius_ = 0.5f;
-    curvature_radius_ = 0.1;
-    octree_cell_size_ = 0.05;
+    pca_radius_ = 0.2f;
+    curvature_radius_ = 0.2;
+    octree_cell_size_ = 0.02;
 
-    tree_count_ = 100;
-    tree_depth_ = 10;
+    tree_count_ = 16;
+    tree_depth_ = 8;
+    tree_counter_threshold_ = 140;
+    tree_random_tests_ = 16;
     max_nn_ = 100000;
     density_radius_ = 0.25;
 
@@ -69,6 +71,8 @@ void Markov::initialize(Core *core){
 
     tree_count_spinner_ = new QSpinBox();
     tree_depth_spinner_ = new QSpinBox();
+    tree_counter_threshold_spinner_ = new QSpinBox();
+    tree_random_tests_spinner_ = new QSpinBox();
     max_nn_spinner_ = new QSpinBox();
 
     pca_radius_spinner_->setDecimals(3);
@@ -76,7 +80,10 @@ void Markov::initialize(Core *core){
     octree_cell_size_spinner_->setDecimals(3);
 
     tree_count_spinner_->setRange(1, 5000);
-    tree_depth_spinner_->setRange(1, 100);
+    tree_depth_spinner_->setRange(1, 5000);
+    tree_counter_threshold_spinner_->setRange(1, 5000);
+    tree_random_tests_spinner_->setRange(1, 5000);
+
     max_nn_spinner_->setRange(1, 100000);
 
     pca_radius_spinner_->setValue(pca_radius_);
@@ -85,6 +92,10 @@ void Markov::initialize(Core *core){
 
     tree_count_spinner_->setValue(tree_count_);
     tree_depth_spinner_->setValue(tree_depth_);
+
+    tree_counter_threshold_spinner_->setValue(tree_counter_threshold_);
+    tree_random_tests_spinner_->setValue(tree_random_tests_);
+
     max_nn_spinner_->setValue(max_nn_);
 
     connect(cl_, &CloudList::updatedActive, [&](){
@@ -120,6 +131,14 @@ void Markov::initialize(Core *core){
 
     connect(tree_depth_spinner_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [=] (int value){
         tree_depth_ = value;
+    });
+
+    connect(tree_counter_threshold_spinner_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [=] (int value){
+         tree_counter_threshold_ = value;
+    });
+
+    connect(tree_random_tests_spinner_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [=] (int value){
+        tree_random_tests_ = value;
     });
 
     connect(max_nn_spinner_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [=] (int value){
@@ -165,6 +184,12 @@ void Markov::initialize2(PluginManager * pm) {
     dock_layout->addWidget(tree_count_spinner_);
     dock_layout->addWidget(new QLabel("Max tree depth"));
     dock_layout->addWidget(tree_depth_spinner_);
+
+
+    dock_layout->addWidget(new QLabel("Samples before split"));
+    dock_layout->addWidget(tree_counter_threshold_spinner_);
+    dock_layout->addWidget(new QLabel("Random tests per split"));
+    dock_layout->addWidget(tree_random_tests_spinner_);
 
     dock_layout->addWidget(new QLabel("PCA max nn"));
     dock_layout->addWidget(max_nn_spinner_);
@@ -502,8 +527,8 @@ Markov::randomforest(){
 
     // Forest
     hp.maxDepth = tree_depth_;
-    hp.numRandomTests = 20;
-    hp.counterThreshold = 140; // Number of samples seen by tree?
+    hp.numRandomTests = tree_random_tests_;
+    hp.counterThreshold = tree_counter_threshold_; // Number of samples seen by tree?
     hp.numTrees = tree_count_;
 
     // Experimenter

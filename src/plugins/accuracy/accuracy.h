@@ -71,7 +71,6 @@ class ACCURACY_API Accuracy : public IPlugin {
 
     QDoubleSpinBox * target_accuracy_input_;
 
-    std::vector<boost::weak_ptr<Layer> >  target_;
     QTimer timer_;
     QTime time_;
 
@@ -87,6 +86,7 @@ class ACCURACY_API Accuracy : public IPlugin {
     std::vector<std::tuple<int, float, float, float>> time_accuracy_precision_recall_;
 
 public:
+    std::vector<boost::weak_ptr<Layer> >  target_;
     QListWidget * target_layers_;
 };
 

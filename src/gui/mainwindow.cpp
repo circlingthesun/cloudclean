@@ -439,7 +439,7 @@ void MainWindow::contextMenu(const QPoint &pos) {
     menu.addAction("Deselect all", clv_, SLOT(deselectAllPoints()));
     menu.addAction("Select all", clv_, SLOT(selectAllPoints()));
     menu.addAction("Invert selection", clv_, SLOT(invertSelection()));
-
+    menu.addAction("Count visible", clv_, SLOT(countVisible()));
 
     if(flatview_->isVisible())
         menu.addAction("Rotate", flatview_, SLOT(rotate90()));

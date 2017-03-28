@@ -1,0 +1,53 @@
+{
+	"scans": [
+		{
+			"path": "/home/rickert/testdata/featureeval/noise.ccp",
+			"targetLayerName": "noise",
+			"resultSelection": 0
+		}
+	],
+	"defaults": {
+		"downsample": 0.02,
+		"curvature_radius": 0.2,
+		"pca_radius": 0.2,
+		"density_radius": 0.2,
+		"pca_max_nn": 1000,
+		"tree_count": 100,
+		"tree_depth": 10,
+		"tree_counter_threshold": 140,
+		"tree_random_tests": 20
+	},
+	"tests": [{
+		"name": "Eigenvalues r=0.1",
+		"features": ["Eigen 1"],
+		"pca_radius": 0.1
+	}, {
+		"name": "Eigenvalues r=0.2",
+		"features": ["Eigen 1"],
+		"pca_radius": 0.2
+	}, {
+		"name": "Eigenvalues r=0.3",
+		"features": ["Eigen 1"],
+		"pca_radius": 0.3
+	}, {
+		"name": "Eigenvalues r=0.4",
+		"features": ["Eigen 1"],
+		"pca_radius": 0.4
+	}, {
+		"name": "Principal curvatures r=0.1",
+		"features": ["Curvature 1"],
+		"curvature_radius": 0.1
+	}, {
+		"name": "Principal curvatures r=0.2",
+		"features": ["Curvature 1"],
+		"curvature_radius": 0.2
+	}, {
+		"name": "Principal curvatures r=0.3",
+		"features": ["Curvature 1"],
+		"curvature_radius": 0.3
+	}, {
+		"name": "Principal curvatures r=0.4",
+		"features": ["Curvature 1"],
+		"curvature_radius": 0.4
+	}]
+}

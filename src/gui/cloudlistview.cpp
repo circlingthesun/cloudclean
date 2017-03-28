@@ -131,6 +131,30 @@ void CloudListView::selectAllPoints(){
     us_->endMacro();
 }
 
+void CloudListView::countVisible() {
+
+    boost::shared_ptr<std::vector<uint16_t> > hidden_labels = ll_->getHiddenLabels();
+
+    uint count = 0;
+
+    for(boost::shared_ptr<PointCloud> cloud : cl_->clouds_){
+        for(uint16_t label : cloud->labels_){
+            bool is_visible = true;
+            for(uint16_t & hlabel : *hidden_labels) {
+                if (label == hlabel) {
+                    is_visible = false;
+                }
+            }
+
+            if (is_visible) {
+                count++;
+            }
+        }
+    }
+
+    qDebug() << "visible points: " << count;
+}
+
 void CloudListView::invertSelection(){
     us_->beginMacro("Invert selection");
     for(boost::shared_ptr<PointCloud> cloud : cl_->clouds_){

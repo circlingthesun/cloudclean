@@ -1,0 +1,72 @@
+{
+	"scans": [
+		{
+			"path": "/home/rickert/testdata/featureeval/noise.ccp",
+			"targetLayerName": "noise",
+			"resultSelection": 0
+		},
+		{
+			"path": "/home/rickert/testdata/featureeval/people_facades_ground.ccp",
+			"targetLayerName": "people",
+			"resultSelection": 1
+		},
+		{
+			"path": "/home/rickert/testdata/featureeval/tools.ccp",
+			"targetLayerName": "tools",
+			"resultSelection": 0
+		},
+		{
+			"path": "/home/rickert/testdata/featureeval/tree_ground-facade.ccp",
+			"targetLayerName": "New Layer 37",
+			"resultSelection": 1
+		}
+	],
+	"defaults": {
+		"downsample": 0.02,
+		"curvature_radius": 0.3,
+		"pca_radius": 0.2,
+		"density_radius": 0.2,
+		"pca_max_nn": 1000,
+		"tree_count": 100,
+		"tree_depth": 10
+	},
+	"tests": [
+	{
+		"name": "Principal curvatures ",
+		"features": ["Curvature 1", "Curvature 2"]
+	}, {
+		"name": "Eigenvalues",
+		"features": ["Eigen 1", "Eigen 2", "Eigen 3"]
+	}, {
+		"name": "Intensity",
+		"features": ["Intensity"]
+	}, {
+		"name": "Omnivariance",
+		"features": ["Omnivariance"]
+	}, {
+		"name": "Normals",
+		"features": ["X Normal", "Y Normal", "Z Normal"]
+	}, {
+		"name": "Curvature",
+		"features": ["Curvature"]
+	}, {
+		"name": "Anisotrophy",
+		"features": ["Anisotrophy"]
+	}, {
+		"name": "Sphericity",
+		"features": ["Sphericity"]
+	}, {
+		"name": "Linearity",
+		"features": ["Linearity"]
+	}, {
+		"name": "Planarity ",
+		"features": ["Planarity"]
+	}, {
+		"name": "Eigenentrophy",
+		"features": ["Eigenentrophy"]
+	}, {
+		"name": "XYZ",
+		"features": ["X", "Y", "Z"]
+	}
+	]
+}

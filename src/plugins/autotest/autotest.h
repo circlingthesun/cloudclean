@@ -24,7 +24,7 @@ class AutoTest : public IPlugin {
     QString getName();
     void initialize(Core * core);
     void initialize2(PluginManager *pm);
-    std::tuple<float, float, float, double,double,double,double,double,double,double,double,double,double,double> runTest(std::vector<std::__cxx11::string> features, float downsample, float curvature_radius, float pca_radius, float density_radius, int pca_max_nn, int tree_count, int tree_depth);
+    std::tuple<float, float, float, double,double,double,double,double,double,double,double,double,double,double> runTest(std::vector<std::__cxx11::string> features, float downsample, float curvature_radius, float pca_radius, float density_radius, int pca_max_nn, int tree_count, int tree_depth, int tree_counter_threshold, int tree_random_tests);
     void cleanup();
     void knntest();
     ~AutoTest();
@@ -36,6 +36,7 @@ class AutoTest : public IPlugin {
     void enable();
     void disable();
     void runtests();
+    void run_feature_selection();
 
  private:
     Core * core_;

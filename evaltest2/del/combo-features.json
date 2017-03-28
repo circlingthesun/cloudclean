@@ -1,0 +1,67 @@
+{
+	"scans": [
+		{
+			"path": "/home/rickert/testdata/featureeval/noise.ccp",
+			"targetLayerName": "noise",
+			"resultSelection": 0
+		},
+		{
+			"path": "/home/rickert/testdata/featureeval/people_facades_ground.ccp",
+			"targetLayerName": "people",
+			"resultSelection": 1
+		},
+		{
+			"path": "/home/rickert/testdata/featureeval/tools.ccp",
+			"targetLayerName": "tools",
+			"resultSelection": 0
+		},
+		{
+			"path": "/home/rickert/testdata/featureeval/tree_ground-facade.ccp",
+			"targetLayerName": "New Layer 37",
+			"resultSelection": 1
+		}
+	],
+	"defaults": {
+		"downsample": 0.02,
+		"curvature_radius": 0.3,
+		"pca_radius": 0.2,
+		"density_radius": 0.2,
+		"pca_max_nn": 1000,
+		"tree_count": 100,
+		"tree_depth": 10
+	},
+	"tests": [
+	{
+		"name": "Principal curvatures + Eigenvalues",
+		"features": ["Curvature 1", "Curvature 2", "Eigen 1", "Eigen 2", "Eigen 3"]
+	}, {
+		"name": "Principal curvatures + Eigenvalues + Intensity",
+		"features": ["Curvature 1", "Curvature 2", "Eigen 1", "Eigen 2", "Eigen 3", "Intensity"]
+	}, {
+		"name": "Principal curvatures + Eigenvalues + Intensity + Omnivariance",
+		"features": ["Curvature 1", "Curvature 2", "Eigen 1", "Eigen 2", "Eigen 3", "Intensity", "Omnivariance"]
+	}, {
+		"name": "Principal curvatures + Eigenvalues + Intensity + Omnivariance + Normals",
+		"features": ["Curvature 1", "Curvature 2", "Eigen 1", "Eigen 2", "Eigen 3", "Intensity", "Omnivariance", "X Normal", "Y Normal", "Z Normal"]
+	}, {
+		"name": "Principal curvatures + Eigenvalues + Intensity + Omnivariance + Normals + Curvature",
+		"features": ["Curvature 1", "Curvature 2", "Eigen 1", "Eigen 2", "Eigen 3", "Intensity", "Omnivariance", "X Normal", "Y Normal", "Z Normal", "Curvature"]
+	}, {
+		"name": "Principal curvatures + Eigenvalues + Intensity + Omnivariance + Normals + Curvature + Anisotrophy",
+		"features": ["Curvature 1", "Curvature 2", "Eigen 1", "Eigen 2", "Eigen 3", "Intensity", "Omnivariance", "X Normal", "Y Normal", "Z Normal", "Curvature", "Anisotrophy"]
+	}, {
+		"name": "Principal curvatures + Eigenvalues + Intensity + Omnivariance + Normals + Curvature + Anisotrophy + Sphericity",
+		"features": ["Curvature 1", "Curvature 2", "Eigen 1", "Eigen 2", "Eigen 3", "Intensity", "Omnivariance", "X Normal", "Y Normal", "Z Normal", "Curvature", "Anisotrophy", "Sphericity"]
+	}, {
+		"name": "Principal curvatures + Eigenvalues + Intensity + Omnivariance + Normals + Curvature + Anisotrophy + Sphericity + Linearity",
+		"features": ["Curvature 1", "Curvature 2", "Eigen 1", "Eigen 2", "Eigen 3", "Intensity", "Omnivariance", "X Normal", "Y Normal", "Z Normal", "Curvature", "Anisotrophy", "Sphericity", "Linearity"]
+	}, {
+		"name": "Principal curvatures + Eigenvalues + Intensity + Omnivariance + Normals + Curvature + Anisotrophy + Sphericity + Linearity + Planarity",
+		"features": ["Curvature 1", "Curvature 2", "Eigen 1", "Eigen 2", "Eigen 3", "Intensity", "Omnivariance", "X Normal", "Y Normal", "Z Normal", "Curvature", "Anisotrophy", "Sphericity", "Linearity", "Planarity"]
+	}, {
+		"name": "Principal curvatures + Eigenvalues + Intensity + Omnivariance + Normals + Curvature + Anisotrophy + Sphericity + Linearity + Planarity + Eigenentrophy",
+		"features": ["Curvature 1", "Curvature 2", "Eigen 1", "Eigen 2", "Eigen 3", "Intensity", "Omnivariance", "X Normal", "Y Normal", "Z Normal", "Curvature", "Anisotrophy", "Sphericity", "Linearity", "Planarity"]
+	}
+
+	]
+}

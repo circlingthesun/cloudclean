@@ -45,7 +45,11 @@ class MARKOV_API Markov : public IPlugin {
 
     QSpinBox * tree_count_spinner_;
     QSpinBox * tree_depth_spinner_;
+    QSpinBox * tree_counter_threshold_spinner_;
+    QSpinBox * tree_random_tests_spinner_;
     QSpinBox * max_nn_spinner_;
+
+
 
     FeatureList * feature_list_;
 
@@ -82,6 +86,8 @@ class MARKOV_API Markov : public IPlugin {
 
     int tree_count_;
     int tree_depth_;
+    int tree_counter_threshold_;
+    int tree_random_tests_;
     int max_nn_;
     double density_radius_;
 

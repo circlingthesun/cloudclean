@@ -28,7 +28,9 @@
 		"density_radius": 0.2,
 		"pca_max_nn": 1000,
 		"tree_count": 100,
-		"tree_depth": 10
+		"tree_depth": 10,
+		"tree_counter_threshold": 140,
+		"tree_random_tests": 20
 	},
 	"tests": [{
 		"name": "Eigenvalues r=0.1",

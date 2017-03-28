@@ -1,0 +1,78 @@
+{
+	"scans": [
+		{
+			"path": "/home/rickert/testdata/featureeval/noise.ccp",
+			"targetLayerName": "noise",
+			"resultSelection": 0
+		},
+		{
+			"path": "/home/rickert/testdata/featureeval/people_facades_ground.ccp",
+			"targetLayerName": "people",
+			"resultSelection": 1
+		},
+		{
+			"path": "/home/rickert/testdata/featureeval/tools.ccp",
+			"targetLayerName": "tools",
+			"resultSelection": 0
+		},
+		{
+			"path": "/home/rickert/testdata/featureeval/tree_ground-facade.ccp",
+			"targetLayerName": "New Layer 37",
+			"resultSelection": 1
+		}
+	],
+	"defaults": {
+		"downsample": 0.02,
+		"curvature_radius": 0.2,
+		"pca_radius": 0.2,
+		"density_radius": 0.2,
+		"pca_max_nn": 1000,
+		"tree_count": 64,
+		"tree_depth": 8,
+		"tree_counter_threshold": 140,
+		"tree_random_tests": 16,
+		"features": ["X", "Y", "Z", "Curvature 1", "Curvature 2", "Intensity"]
+	},
+	"tests": [
+
+	{
+		"name": "Current"
+	},
+
+	{
+		"name": "Downsample 0.03",
+		"downsample": 0.03
+	},
+
+	{
+		"name": "Downsample 0.04",
+		"downsample": 0.04
+	},
+
+	{
+		"name": "Downsample 0.05",
+		"downsample": 0.05
+	},
+
+	{
+		"name": "Downsample 0.06",
+		"downsample": 0.06
+	},
+
+	{
+		"name": "Tree count 32",
+		"tree_count": 32
+	},
+
+	{
+		"name": "Tree count 16",
+		"tree_count": 16
+	},
+
+	{
+		"name": "Tree count 8",
+		"tree_count": 8
+	}
+
+	]
+}

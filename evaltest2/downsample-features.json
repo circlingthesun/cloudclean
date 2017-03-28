@@ -1,0 +1,257 @@
+{
+	"scans": [
+		{
+			"path": "/home/rickert/testdata/featureeval/noise.ccp",
+			"targetLayerName": "noise",
+			"resultSelection": 0
+		},
+		{
+			"path": "/home/rickert/testdata/featureeval/people_facades_ground.ccp",
+			"targetLayerName": "people",
+			"resultSelection": 1
+		},
+		{
+			"path": "/home/rickert/testdata/featureeval/tools.ccp",
+			"targetLayerName": "tools",
+			"resultSelection": 0
+		},
+		{
+			"path": "/home/rickert/testdata/featureeval/tree_ground-facade.ccp",
+			"targetLayerName": "New Layer 37",
+			"resultSelection": 1
+		}
+	],
+	"defaults": {
+		"downsample": 0.02,
+		"curvature_radius": 0.3,
+		"pca_radius": 0.2,
+		"density_radius": 0.2,
+		"pca_max_nn": 1000,
+		"tree_count": 100,
+		"tree_depth": 10,
+		"tree_counter_threshold": 140,
+		"tree_random_tests": 20
+	},
+	"tests": [
+
+	{
+		"name": "Eigenvalues dr=0.02",
+		"features": ["Eigen 1", "Eigen 2", "Eigen 3"],
+		"downsample": 0.02
+	}, {
+		"name": "Linearity dr=0.02",
+		"features": ["Linearity"],
+		"downsample": 0.02
+	}, {
+		"name": "Planarity  dr=0.02",
+		"features": ["Planarity"],
+		"downsample": 0.02
+	}, {
+		"name": "Sphericity dr=0.02",
+		"features": ["Sphericity"],
+		"downsample": 0.02
+	}, {
+		"name": "Anisotrophy dr=0.02",
+		"features": ["Anisotrophy"],
+		"downsample": 0.02
+	}, {
+		"name": "Eigenentrophy dr=0.02",
+		"features": ["Eigenentrophy"],
+		"downsample": 0.02
+	}, {
+		"name": "Omnivariance dr=0.02",
+		"features": ["Omnivariance"],
+		"downsample": 0.02
+	}, {
+		"name": "Principal curvatures  dr=0.02",
+		"features": ["Curvature 1", "Curvature 2"],
+		"downsample": 0.02
+	}, {
+		"name": "Curvature dr=0.02",
+		"features": ["Curvature"],
+		"downsample": 0.02
+	}, {
+		"name": "Distance from origin dr=0.02",
+		"features": ["Distance from origin"],
+		"downsample": 0.02
+	}, {
+		"name": "XYZ dr=0.02",
+		"features": ["X", "Y", "Z"],
+		"downsample": 0.02
+	}, {
+		"name": "Intensity dr=0.02",
+		"features": ["Intensity"],
+		"downsample": 0.02
+	}, {
+		"name": "Normals dr=0.02",
+		"features": ["X Normal", "Y Normal", "Z Normal"],
+		"downsample": 0.02
+	},
+
+
+	{
+		"name": "Eigenvalues dr=0.04",
+		"features": ["Eigen 1", "Eigen 2", "Eigen 3"],
+		"downsample": 0.04
+	}, {
+		"name": "Linearity dr=0.04",
+		"features": ["Linearity"],
+		"downsample": 0.04
+	}, {
+		"name": "Planarity  dr=0.04",
+		"features": ["Planarity"],
+		"downsample": 0.04
+	}, {
+		"name": "Sphericity dr=0.04",
+		"features": ["Sphericity"],
+		"downsample": 0.04
+	}, {
+		"name": "Anisotrophy dr=0.04",
+		"features": ["Anisotrophy"],
+		"downsample": 0.04
+	}, {
+		"name": "Eigenentrophy dr=0.04",
+		"features": ["Eigenentrophy"],
+		"downsample": 0.04
+	}, {
+		"name": "Omnivariance dr=0.04",
+		"features": ["Omnivariance"],
+		"downsample": 0.04
+	}, {
+		"name": "Principal curvatures  dr=0.04",
+		"features": ["Curvature 1", "Curvature 2"],
+		"downsample": 0.04
+	}, {
+		"name": "Curvature dr=0.04",
+		"features": ["Curvature"],
+		"downsample": 0.04
+	}, {
+		"name": "Distance from origin dr=0.04",
+		"features": ["Distance from origin"],
+		"downsample": 0.04
+	}, {
+		"name": "XYZ dr=0.04",
+		"features": ["X", "Y", "Z"],
+		"downsample": 0.04
+	}, {
+		"name": "Intensity dr=0.04",
+		"features": ["Intensity"],
+		"downsample": 0.04
+	}, {
+		"name": "Normals dr=0.04",
+		"features": ["X Normal", "Y Normal", "Z Normal"],
+		"downsample": 0.04
+	},
+
+
+	{
+		"name": "Eigenvalues dr=0.06",
+		"features": ["Eigen 1", "Eigen 2", "Eigen 3"],
+		"downsample": 0.06
+	}, {
+		"name": "Linearity dr=0.06",
+		"features": ["Linearity"],
+		"downsample": 0.06
+	}, {
+		"name": "Planarity  dr=0.06",
+		"features": ["Planarity"],
+		"downsample": 0.06
+	}, {
+		"name": "Sphericity dr=0.06",
+		"features": ["Sphericity"],
+		"downsample": 0.06
+	}, {
+		"name": "Anisotrophy dr=0.06",
+		"features": ["Anisotrophy"],
+		"downsample": 0.06
+	}, {
+		"name": "Eigenentrophy dr=0.06",
+		"features": ["Eigenentrophy"],
+		"downsample": 0.06
+	}, {
+		"name": "Omnivariance dr=0.06",
+		"features": ["Omnivariance"],
+		"downsample": 0.06
+	}, {
+		"name": "Principal curvatures  dr=0.06",
+		"features": ["Curvature 1", "Curvature 2"],
+		"downsample": 0.06
+	}, {
+		"name": "Curvature dr=0.06",
+		"features": ["Curvature"],
+		"downsample": 0.06
+	}, {
+		"name": "Distance from origin dr=0.06",
+		"features": ["Distance from origin"],
+		"downsample": 0.06
+	}, {
+		"name": "XYZ dr=0.06",
+		"features": ["X", "Y", "Z"],
+		"downsample": 0.06
+	}, {
+		"name": "Intensity dr=0.06",
+		"features": ["Intensity"],
+		"downsample": 0.06
+	}, {
+		"name": "Normals dr=0.06",
+		"features": ["X Normal", "Y Normal", "Z Normal"],
+		"downsample": 0.06
+	},
+
+
+	{
+		"name": "Eigenvalues dr=0.08",
+		"features": ["Eigen 1", "Eigen 2", "Eigen 3"],
+		"downsample": 0.08
+	}, {
+		"name": "Linearity dr=0.08",
+		"features": ["Linearity"],
+		"downsample": 0.08
+	}, {
+		"name": "Planarity  dr=0.08",
+		"features": ["Planarity"],
+		"downsample": 0.08
+	}, {
+		"name": "Sphericity dr=0.08",
+		"features": ["Sphericity"],
+		"downsample": 0.08
+	}, {
+		"name": "Anisotrophy dr=0.08",
+		"features": ["Anisotrophy"],
+		"downsample": 0.08
+	}, {
+		"name": "Eigenentrophy dr=0.08",
+		"features": ["Eigenentrophy"],
+		"downsample": 0.08
+	}, {
+		"name": "Omnivariance dr=0.08",
+		"features": ["Omnivariance"],
+		"downsample": 0.08
+	}, {
+		"name": "Principal curvatures  dr=0.08",
+		"features": ["Curvature 1", "Curvature 2"],
+		"downsample": 0.08
+	}, {
+		"name": "Curvature dr=0.08",
+		"features": ["Curvature"],
+		"downsample": 0.08
+	}, {
+		"name": "Distance from origin dr=0.08",
+		"features": ["Distance from origin"],
+		"downsample": 0.08
+	}, {
+		"name": "XYZ dr=0.08",
+		"features": ["X", "Y", "Z"],
+		"downsample": 0.08
+	}, {
+		"name": "Intensity dr=0.08",
+		"features": ["Intensity"],
+		"downsample": 0.08
+	}, {
+		"name": "Normals dr=0.08",
+		"features": ["X Normal", "Y Normal", "Z Normal"],
+		"downsample": 0.08
+	}
+
+	]
+}

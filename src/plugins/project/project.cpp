@@ -266,12 +266,30 @@ void Project::load(QString filename){
         if(version == 0)
             continue;
 
+        // just for rick
+
+        std::vector<int> selection_counts = {0, 0, 0, 0, 0, 0, 0, 0};
+
         // save selections
         uint8_t flags;
         for(int i = 0; i < labelcount; i++) {
             file >> flags;
             cloud->flags_[i] = PointFlags(flags);
+
+            for(uint i = 0; i < 8; i++){
+                if (flags & (1 << i)) {
+                    selection_counts[i]++;
+                }
+            }
         }
+
+        uint sum = 0;
+        for(uint i = 0; i < 8; i++){
+            qDebug() << i << ": " << selection_counts[i];
+            sum += selection_counts[i];
+        }
+
+        qDebug() << "sum: " << sum;
 
     }
 
