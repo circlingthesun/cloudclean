@@ -400,7 +400,7 @@ MinCut::buildGraph ()
     return (false);
 
   if (search_ == 0)
-    search_ = boost::shared_ptr<pcl::search::Search<pcl::PointXYZI> > (new pcl::search::KdTree<pcl::PointXYZI>);
+    search_ = boost::shared_ptr<pcl::search::Search<pcl::PointXYZRGB> > (new pcl::search::KdTree<pcl::PointXYZRGB>);
 
   graph_.reset ();
   graph_ = boost::shared_ptr< mGraph > (new mGraph ());
@@ -550,8 +550,8 @@ MinCut::calculateBinaryPotential (int source, int target) const
 
     double weight = 0.0;
     double distance = 0.0;
-    const pcl::PointXYZI & s = input_->points[source];
-    const pcl::PointXYZI & t = input_->points[target];
+    const pcl::PointXYZRGB & s = input_->points[source];
+    const pcl::PointXYZRGB & t = input_->points[target];
     distance = (s.getVector3fMap() - t.getVector3fMap()).squaredNorm();
     distance *= inverse_sigma_;
 

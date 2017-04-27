@@ -210,7 +210,7 @@ int pick(int win_x, int win_y, int win_width, int win_height, float max_dist,
                 continue;
         }
 
-        pcl::PointXYZI & p = pc->points[i];
+        pcl::PointXYZRGB & p = pc->points[i];
 
         Eigen::Vector3f query_point = proj * mv * p.getVector3fMap();
         query_point[2] = 0.0f;

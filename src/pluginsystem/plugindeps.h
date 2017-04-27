@@ -36,9 +36,9 @@ typedef boost::graph_traits< mGraph >::in_edge_iterator InEdgeIterator;
 
 
 void linkerhack(){
-    pcl::search::KdTree<pcl::PointXYZI> wee;
-    pcl::search::Search <pcl::PointXYZI> * KdTree;
+    pcl::search::KdTree<pcl::PointXYZRGB> wee;
+    pcl::search::Search <pcl::PointXYZRGB> * KdTree;
     boost::shared_ptr<mGraph> graph_;
     graph_ = boost::shared_ptr< mGraph > (new mGraph ());
-    pcl::PCA<pcl::PointXYZI> pc(false);
+    pcl::PCA<pcl::PointXYZRGB> pc(false);
 }

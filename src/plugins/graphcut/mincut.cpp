@@ -268,7 +268,7 @@ MinCut::setNumberOfNeighbours (unsigned int neighbour_number)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
- std::vector<pcl::PointXYZI, Eigen::aligned_allocator<pcl::PointXYZI> >
+ std::vector<pcl::PointXYZRGB, Eigen::aligned_allocator<pcl::PointXYZRGB> >
 MinCut::getForegroundPoints () const
 {
   return (foreground_points_);
@@ -276,7 +276,7 @@ MinCut::getForegroundPoints () const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
  void
-MinCut::setForegroundPoints ( pcl::PointCloud<pcl::PointXYZI>::Ptr foreground_points)
+MinCut::setForegroundPoints ( pcl::PointCloud<pcl::PointXYZRGB>::Ptr foreground_points)
 {
   foreground_points_.clear ();
   foreground_points_.reserve (foreground_points->points.size ());
@@ -287,7 +287,7 @@ MinCut::setForegroundPoints ( pcl::PointCloud<pcl::PointXYZI>::Ptr foreground_po
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
- std::vector<pcl::PointXYZI, Eigen::aligned_allocator<pcl::PointXYZI> >
+ std::vector<pcl::PointXYZRGB, Eigen::aligned_allocator<pcl::PointXYZRGB> >
 MinCut::getBackgroundPoints () const
 {
   return (background_points_);
@@ -295,7 +295,7 @@ MinCut::getBackgroundPoints () const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
  void
-MinCut::setBackgroundPoints ( pcl::PointCloud<pcl::PointXYZI>::Ptr background_points)
+MinCut::setBackgroundPoints ( pcl::PointCloud<pcl::PointXYZRGB>::Ptr background_points)
 {
   background_points_.clear ();
   background_points_.reserve (background_points->points.size ());
@@ -405,7 +405,7 @@ MinCut::buildGraph ()
     return (false);
 
   if (search_ == 0)
-    search_ = boost::shared_ptr<pcl::search::Search<pcl::PointXYZI> > (new pcl::search::KdTree<pcl::PointXYZI>);
+    search_ = boost::shared_ptr<pcl::search::Search<pcl::PointXYZRGB> > (new pcl::search::KdTree<pcl::PointXYZRGB>);
 
   graph_.reset ();
   graph_ = boost::shared_ptr< mGraph > (new mGraph ());

@@ -144,7 +144,7 @@ void GraphCut::segment(int idx){
 
 
     MinCut mc;
-    pcl::PointCloud<pcl::PointXYZI>::Ptr ptr(cl_->active_.get(), boost::serialization::null_deleter());
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr ptr(cl_->active_.get(), boost::serialization::null_deleter());
     mc.setInputCloud(ptr);
 
     pcl::IndicesPtr source_indices(new std::vector<int>);
@@ -165,7 +165,7 @@ void GraphCut::segment(int idx){
 
     mc.setIndices(source_indices);
 
-    pcl::PointCloud<pcl::PointXYZI>::Ptr foreground_points(new pcl::PointCloud<pcl::PointXYZI> ());
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr foreground_points(new pcl::PointCloud<pcl::PointXYZRGB> ());
     foreground_points->points.push_back(cl_->active_->points[idx]); // What? There can be more than one?
 
     mc.setForegroundPoints (foreground_points);

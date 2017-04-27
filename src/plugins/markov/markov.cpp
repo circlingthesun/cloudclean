@@ -304,7 +304,9 @@ Markov::randomforest(){
     bool use_rc = feature_list_->hasFeature("Curvature");
     bool use_odist = feature_list_->hasFeature("Distance from origin");
     bool use_n_count = feature_list_->hasFeature("Number of neighbours");
-
+    bool use_r = feature_list_->hasFeature("R");
+    bool use_g = feature_list_->hasFeature("G");
+    bool use_b = feature_list_->hasFeature("B");
 
     if(use_x) qDebug() << "using: " << "X";
     if(use_y) qDebug() << "using: " << "Y";
@@ -327,7 +329,9 @@ Markov::randomforest(){
     if(use_rc) qDebug() << "using: " << "Curvature";
     if(use_odist) qDebug() << "using: " << "Distance from origin";
     if(use_n_count) qDebug() << "using: " << "Number of neighbours";
-
+    if(use_r) qDebug() << "using: " << "R";
+    if(use_g) qDebug() << "using: " << "G";
+    if(use_b) qDebug() << "using: " << "B";
 
     clock_t action_start = std::clock();
 
@@ -338,54 +342,13 @@ Markov::randomforest(){
 
     // zip and downsample
     if(downsample_dirty_) {
-        pcl::PointCloud<pcl::PointXYZINormal>::Ptr zipped = zipNormals(cl_->active_, normals);
+        pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr zipped = zipNormals(cl_->active_, normals);
         big_to_small_.clear();
         smallcloud_ = octreeDownsample(zipped.get(), octree_cell_size_, big_to_small_);
         downsample_dirty_ = false;
     }
 
     double downsample_elapsed = double(std::clock() - downsample_start) / CLOCKS_PER_SEC;
-
-
-//    clock_t nn_search_start = std::clock();
-//    double total = 0;
-
-//    {
-//        typename pcl::PointCloud<pcl::PointXYZINormal>::ConstPtr cptr(smallcloud_.get(), boost::serialization::null_deleter());
-//        pcl::KdTreeFLANN<pcl::PointXYZINormal> search;
-//        search.setInputCloud(cptr);
-
-//        std::vector<float> kDist;
-//        std::vector<int> kIdxs;
-
-//        for(uint i = 0; i < smallcloud_->size(); i++){
-//            search.radiusSearch(i, 0.15, kIdxs, kDist);
-//            total+=kIdxs.size();
-//        }
-//    }
-
-//    qDebug() << "cloud size" << smallcloud_->size();
-//    qDebug() << "total" << total;
-//    qDebug() << "avg" << double(total)/smallcloud_->size();
-
-//    double nn_search_elapsed = double(std::clock() - nn_search_start) / CLOCKS_PER_SEC;
-//    qDebug() << "time" << nn_search_elapsed << "avg" << double(nn_search_elapsed)/cloud->size();
-
-//    qDebug() << "downsample: " << downsample_elapsed;
-
-//    clock_t upsample_start = std::clock();
-
-//    std::vector<int> trash;
-//    for(int idx = 0; idx < cloud->size(); idx++) {
-//        trash.push_back(big_to_small_[idx]);
-//    }
-
-//    double upsample_elapsed = double(std::clock() - upsample_start) / CLOCKS_PER_SEC;
-
-//    qDebug() << "upsample time" << upsample_elapsed << "trash: " << trash.size();
-
-//    return;
-
 
     clock_t density_start = std::clock();
 
@@ -394,7 +357,7 @@ Markov::randomforest(){
     std::vector<int> neighbour_count;
 
     if(use_n_count){
-        pcl::KdTreeFLANN<pcl::PointXYZINormal> search;
+        pcl::KdTreeFLANN<pcl::PointXYZRGBNormal> search;
         search.setInputCloud(smallcloud_);
 
         std::vector<float> kDist;
@@ -424,11 +387,11 @@ Markov::randomforest(){
     // Curvature
     // pcl::PointCloud<pcl::PrincipalCurvatures>::Ptr principal_curvatures_;
     if((use_pc1 || use_pc2) && curvatures_dirty_) {
-        pcl::PrincipalCurvaturesEstimation<pcl::PointXYZINormal, pcl::PointXYZINormal, pcl::PrincipalCurvatures> principalCurvaturesEstimation;
+        pcl::PrincipalCurvaturesEstimation<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal, pcl::PrincipalCurvatures> principalCurvaturesEstimation;
         principalCurvaturesEstimation.setInputCloud(smallcloud_);
         principalCurvaturesEstimation.setInputNormals(smallcloud_);
 
-        pcl::search::KdTree<pcl::PointXYZINormal>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZINormal>);
+        pcl::search::KdTree<pcl::PointXYZRGBNormal>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZRGBNormal>);
         tree->setInputCloud(smallcloud_);
         principalCurvaturesEstimation.setSearchMethod (tree);
         principalCurvaturesEstimation.setRadiusSearch(curvature_radius_);
@@ -456,7 +419,7 @@ Markov::randomforest(){
         if(use_z)
             vec(++featnum) = smallcloud_->at(idx).z;
         if(use_i)
-            vec(++featnum) = smallcloud_->at(idx).intensity;
+            vec(++featnum) = smallcloud_->at(idx).data[3];
         if(use_nx)
             vec(++featnum) = smallcloud_->at(idx).normal_x;
         if(use_ny)
@@ -511,11 +474,21 @@ Markov::randomforest(){
         if(use_rc)
             vec(++featnum) = pca[0] / (pca[0] + pca[1] + pca[2]);
 
-        if(use_odist)
+        if(use_odist) {
             vec(++featnum) = smallcloud_->at(idx).getVector3fMap().norm();
+        }
         if(use_n_count && neighbour_count[idx]) {
-//            vec(++featnum) = double(neighbour_count[idx])/pow(smallcloud_->at(idx).getVector3fMap().norm(), 2);
             vec(++featnum) = double(neighbour_count[idx]);
+        }
+
+        if(use_r) {
+            vec(++featnum) = double(smallcloud_->at(idx).r);
+        }
+        if(use_g) {
+            vec(++featnum) = double(smallcloud_->at(idx).g);
+        }
+        if(use_r) {
+            vec(++featnum) = double(smallcloud_->at(idx).b);
         }
 
         return vec;

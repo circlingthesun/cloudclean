@@ -29,7 +29,7 @@ boost::shared_ptr<std::vector<float>> makeDistmap(
 
     for(uint i = 0; i < cloud->size(); i++) {
         int grid_idx = cloud->cloudToGridMap()[i];
-        pcl::PointXYZI & p = (*cloud)[i];
+        pcl::PointXYZRGB & p = (*cloud)[i];
         (*distmap)[grid_idx] = sqrt(pow(p.x, 2) + pow(p.y, 2) + pow(p.z, 2));
 
         if((*distmap)[i] > max_dist)
@@ -163,7 +163,7 @@ boost::shared_ptr<std::vector<float> > interpolate(
     return out_image;
 }
 
-boost::shared_ptr<std::vector<float> > stdev_dist(pcl::PointCloud<pcl::PointXYZI>::Ptr cloud,
+boost::shared_ptr<std::vector<float> > stdev_dist(pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud,
                             const double radius, int max_nn, bool use_depth) {
 
     boost::shared_ptr<std::vector<float>> stdevs
@@ -251,8 +251,8 @@ boost::shared_ptr<std::vector<Eigen::Vector3f> > getHist(boost::shared_ptr<Point
     boost::shared_ptr<std::vector<Eigen::Vector3f> > eigen_vals =
             boost::make_shared<std::vector<Eigen::Vector3f>>(cloud->size());
 
-    pcl::KdTreeFLANN<pcl::PointXYZI> search;
-    search.setInputCloud(pcl::PointCloud<pcl::PointXYZI>::ConstPtr(cloud.get(), boost::serialization::null_deleter()));
+    pcl::KdTreeFLANN<pcl::PointXYZRGB> search;
+    search.setInputCloud(pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr(cloud.get(), boost::serialization::null_deleter()));
 
 
     QTime total;
@@ -283,8 +283,8 @@ boost::shared_ptr<std::vector<Eigen::Vector3f> > getHist(boost::shared_ptr<Point
             continue;
         }
 
-        pcl::PCA<pcl::PointXYZI> pcEstimator(true);
-        pcl::PointCloud<pcl::PointXYZI>::ConstPtr const_cloud(cloud.get(), boost::serialization::null_deleter());
+        pcl::PCA<pcl::PointXYZRGB> pcEstimator(true);
+        pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr const_cloud(cloud.get(), boost::serialization::null_deleter());
         pcEstimator.setInputCloud (const_cloud);
         pcEstimator.setIndices(kIdxs);
         (*eigen_vals)[i] = pcEstimator.getEigenValues();

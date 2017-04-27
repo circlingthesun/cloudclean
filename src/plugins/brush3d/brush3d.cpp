@@ -350,7 +350,7 @@ bool Brush3D::mouseMoveEvent(QMouseEvent * event) {
                         Eigen::Vector3f p = p1 + dist*dir;
                         dist+=last_rad_/4;
 
-                        pcl::PointXYZI q;
+                        pcl::PointXYZRGB q;
                         q.getVector3fMap() = p;
 
                         // calculate radius

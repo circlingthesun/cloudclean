@@ -13,7 +13,7 @@
 #include <Eigen/Dense>
 #include "model/export.h"
 
-typedef pcl::octree::OctreePointCloudSearch<pcl::PointXYZI> Octree;
+typedef pcl::octree::OctreePointCloudSearch<pcl::PointXYZRGB> Octree;
 
 enum class MODEL_API PointFlags : int8_t {
     selected = 0x001,
@@ -30,7 +30,7 @@ enum class MODEL_API CoordinateFrame: bool {
     Laser
 };
 
-class MODEL_API PointCloud : public QObject, public pcl::PointCloud<pcl::PointXYZI> {
+class MODEL_API PointCloud : public QObject, public pcl::PointCloud<pcl::PointXYZRGB> {
     Q_OBJECT
  public:
     explicit PointCloud();

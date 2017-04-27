@@ -91,7 +91,7 @@ class MARKOV_API Markov : public IPlugin {
     int max_nn_;
     double density_radius_;
 
-    pcl::PointCloud<pcl::PointXYZINormal>::Ptr smallcloud_;
+    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr smallcloud_;
     std::vector<int> big_to_small_;
     boost::shared_ptr<std::vector<Eigen::Vector3f> > pca_;
     pcl::PointCloud<pcl::PrincipalCurvatures>::Ptr principal_curvatures_;

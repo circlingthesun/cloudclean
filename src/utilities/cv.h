@@ -64,7 +64,7 @@ UTIL_API boost::shared_ptr<std::vector<float> > interpolate(
         int w, int h, const int nsize,
         boost::shared_ptr<std::vector<float>> out_image = nullptr);
 
-UTIL_API boost::shared_ptr<std::vector<float> > stdev_dist(pcl::PointCloud<pcl::PointXYZI>::Ptr cloud,
+UTIL_API boost::shared_ptr<std::vector<float> > stdev_dist(pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud,
                                  const double radius, int max_nn = 0, bool use_depth = false);
 
 UTIL_API boost::shared_ptr<std::vector<float>> cloudToGrid(const std::vector<int> & map, uint img_size,

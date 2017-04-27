@@ -42,12 +42,9 @@ typename pcl::PointCloud<PointT>::Ptr octreeDownsample(
         Eigen::Map<Eigen::VectorXf> pmap = Eigen::VectorXf::Map(&p.data[0], data_items);
 
         for(int idx : indices){
-
-
             Eigen::Map<Eigen::VectorXf> pmap1 = Eigen::VectorXf::Map(reinterpret_cast<float *>(&((*input)[idx])), data_items);
             pmap += pmap1;
             sub_idxs[idx] = output->size();
-
         }
 
         float size_inv = 1.0/indices.size();
@@ -60,6 +57,74 @@ typename pcl::PointCloud<PointT>::Ptr octreeDownsample(
 
     return output;
 }
+
+pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr octreeDownsample(
+        pcl::PointCloud<pcl::PointXYZRGBNormal> * input,
+        float resolution,
+        std::vector<int> & sub_idxs) {
+
+    size_t data_items = sizeof(pcl::PointXYZRGBNormal)/sizeof(float);
+
+    typename pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr output(new pcl::PointCloud<pcl::PointXYZRGBNormal>());
+    sub_idxs.resize(input->size(), 0);
+
+    typename pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr ptr(input, boost::serialization::null_deleter());
+
+    typename pcl::octree::OctreePointCloud<pcl::PointXYZRGBNormal> octree1(resolution);
+    octree1.setInputCloud (ptr);
+    octree1.addPointsFromInputCloud();
+
+    typename pcl::octree::OctreePointCloud<pcl::PointXYZRGBNormal>::LeafNodeIterator it1;
+    typename pcl::octree::OctreePointCloud<pcl::PointXYZRGBNormal>::LeafNodeIterator it1_end = octree1.leaf_end();
+
+    unsigned int leafNodeCounter = 0;
+
+    for (it1 = octree1.leaf_begin(); it1 != it1_end; ++it1) {
+        std::vector<int> & indices = it1.getLeafContainer().getPointIndicesVector();
+
+        int r = 0, g = 0, b = 0;
+        float x = 0.0f, y = 0.0f, z = 0.0f, intensity = 0.0f, nx = 0.0f, ny = 0.0f, nz = 0.0f;
+
+        for(int idx : indices){
+
+            x += (*input)[idx].x;
+            y += (*input)[idx].y;
+            z += (*input)[idx].z;
+            intensity += (*input)[idx].data[3];
+            nx += (*input)[idx].normal_x;
+            ny += (*input)[idx].normal_y;
+            nz += (*input)[idx].normal_z;
+            r += (*input)[idx].r;
+            g += (*input)[idx].g;
+            b += (*input)[idx].b;
+
+            sub_idxs[idx] = output->size();
+        }
+
+        float size_inv = 1.0/indices.size();
+
+        pcl::PointXYZRGBNormal p;
+
+        p.x = x*=size_inv;
+        p.y = y*=size_inv;
+        p.z = z*=size_inv;
+        p.data[3] = intensity*=size_inv;
+        p.normal_x = nx*=size_inv;
+        p.normal_y = nx*=size_inv;
+        p.normal_z = nz*=size_inv;
+        p.r = uint8_t(r*=size_inv);
+        p.g = uint8_t(g*=size_inv);
+        p.b = uint8_t(b*=size_inv);
+
+        output->push_back(p);
+
+        leafNodeCounter++;
+    }
+
+    return output;
+}
+
+
 
 #undef small
 #ifdef small
@@ -86,7 +151,7 @@ void map_small_to_big(
 }
 
 
-UTIL_API pcl::PointCloud<pcl::PointXYZINormal>::Ptr zipNormals(pcl::PointCloud<pcl::PointXYZI>::Ptr cloud,
+UTIL_API pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr zipNormals(pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud,
         pcl::PointCloud<pcl::Normal>::Ptr normals);
 
 #endif  // ULTILITIES_UTILS_H

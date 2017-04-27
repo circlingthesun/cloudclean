@@ -30,7 +30,7 @@ inline bool isNaN(float val){
 }
 
 PointCloud::PointCloud()
-    : pcl::PointCloud<pcl::PointXYZI>() {
+    : pcl::PointCloud<pcl::PointXYZRGB>() {
     pc_mutex.reset(new std::mutex());
     frame_ = CoordinateFrame::Laser;
 
@@ -99,20 +99,26 @@ bool PointCloud::save_ptx(const char* filename, std::vector<uint16_t> labels){
             emit progress(100*grid_idx/static_cast<float>(point_count));
 
         if(next_grid_idx != grid_idx) {
-            fprintf(pfile, "%f %f %f %f\n", 0.0f, 0.0f, 0.0f, 0.0f);
+            fprintf(pfile, "%f %f %f %f %hhd %hhd %hhd\n", 0.0f, 0.0f, 0.0f, 0.0f, 0, 0, 0);
             continue;
         }
 
         next_grid_idx = this->cloud_to_grid_map_[++cloud_idx];
 
         if(labels.size() != 0 && !point_matches_label(cloud_idx, labels)) {
-            fprintf(pfile, "%f %f %f %f\n", 0.0f, 0.0f, 0.0f, 0.0f);
+            fprintf(pfile, "%f %f %f %f %hhd %hhd %hhd\n", 0.0f, 0.0f, 0.0f, 0.0f, 0, 0, 0);
             continue;
         }
 
-        fprintf(pfile, "%f %f %f %f\n", this->points[cloud_idx].x,
-                this->points[cloud_idx].y, this->points[cloud_idx].z,
-                this->points[cloud_idx].intensity);
+        fprintf(pfile, "%f %f %f %f %hhd %hhd %hhd\n",
+                this->points[cloud_idx].x,
+                this->points[cloud_idx].y,
+                this->points[cloud_idx].z,
+                this->points[cloud_idx].data[3],
+                this->points[cloud_idx].r,
+                this->points[cloud_idx].g,
+                this->points[cloud_idx].b
+                );
 
     }
 
@@ -144,7 +150,7 @@ bool PointCloud::load_ptx(const char* filename, int decimation_factor) {
     // Contains nans
     this->is_dense = false;
 
-    // Matrix dimentions
+    // Matrix dimensions
     int file_width, file_height;
     fscanf(pfile, "%d %d", &file_width, &file_height);
 
@@ -188,11 +194,14 @@ bool PointCloud::load_ptx(const char* filename, int decimation_factor) {
     if(update_interval == 0)
         update_interval = 1;
 
-    pcl::PointXYZI point;
+    pcl::PointXYZRGB point;
     float & x = point.x;
     float & y = point.y;
     float & z = point.z;
-    float & intensity = point.intensity;
+    float & intensity = point.data[3];
+    uint8_t & r = point.r;
+    uint8_t & g = point.g;
+    uint8_t & b = point.b;
 
     // Tokenize the first line
     char * ch;
@@ -211,8 +220,9 @@ bool PointCloud::load_ptx(const char* filename, int decimation_factor) {
 
     // Check if rgb channels are present
     bool has_rgb = false;
-    if(tokens == 7)
+    if(tokens == 7) {
         has_rgb = true;
+    }
 
     // Move reset the reading pos in file
     fseek(pfile, file_pos, SEEK_SET);
@@ -229,30 +239,33 @@ bool PointCloud::load_ptx(const char* filename, int decimation_factor) {
         file_sample_idx++;
 
         // Only process every decimation_factor-ith row and column
-        if((row+1)%decimation_factor != 0 || (col+1)%decimation_factor != 0){
-            //for(int i = 0; i < tokens; i++ )
-            //    fscanf(pfile, "%f", &ign);
-            qDebug() << "Skiped point";
-            fgets(buff, 1024, pfile);
-            continue;
-        }
+//        if((row+1)%decimation_factor != 0 || (col+1)%decimation_factor != 0){
+//            qDebug() << "Skiped point";
+//            fgets(buff, 1024, pfile);
+//            continue;
+//        }
 
         if(ferror (pfile) || feof(pfile)){
             qDebug() << "File read fail at line " << file_sample_idx << "with sample idx:" << sampled_idx;
             return false;
         }
 
-        //file_pos = ftell(pfile);
-        int filled = fscanf(pfile, "%f %f %f %f\n", &x, &y, &z, &intensity);
+        int filled;
 
-        if(filled != 4) {
+        if(has_rgb) {
+            filled = fscanf(pfile, "%f %f %f %f %hhd %hhd %hhd", &x, &y, &z, &intensity, &r, &g, &b);
+        } else {
+            filled = fscanf(pfile, "%f %f %f %f", &x, &y, &z, &intensity);
+        }
+
+        if(filled != (has_rgb ? 7 : 4 )) {
             qDebug() << "File parse fail at line " << file_sample_idx << "with sample idx" << sampled_idx;
             qDebug() << "File pos: " << file_pos;
             if(ferror(pfile))
                 qDebug() << "File read fail.";
             else {
-                //fgets(buff, 1024, pfile);
-                //qDebug("Could not parse '%s'", buff);
+                fgets(buff, 1024, pfile);
+                qDebug("Could not parse '%s'", buff);
                 continue;
             }
 
@@ -265,13 +278,13 @@ bool PointCloud::load_ptx(const char* filename, int decimation_factor) {
         }
 
         // skip the rest of the line
-        if(has_rgb) {
+//        if(has_rgb) {
             fgets(buff, 1024, pfile);
-        }
+//        }
 
         sampled_idx++;
 
-        // Skip points that are invalid
+        // Skip points that are not returned
         if((x == 0) && (y == 0) && (z == 0)) {
             continue;
         }
@@ -291,8 +304,6 @@ bool PointCloud::load_ptx(const char* filename, int decimation_factor) {
         if(z > max_bounding_box_.z())
             min_bounding_box_.z() = z;
 
-        point.data_c[2] = cloud_to_grid_map_.size();
-        point.data_c[3] = sampled_idx-1; // Store the index in the cloud, new hack
         this->points.push_back(point);
         this->cloud_to_grid_map_.push_back(sampled_idx-1); // Undo the increment
     }
@@ -314,7 +325,7 @@ bool PointCloud::load_ptx(const char* filename, int decimation_factor) {
         qDebug() << "Start octree";
         Octree::Ptr octree = Octree::Ptr(new Octree(resolution));
         assert(this->size());
-        pcl::PointCloud<pcl::PointXYZI>::ConstPtr cptr(this, boost::serialization::null_deleter());
+        pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cptr(this, boost::serialization::null_deleter());
         octree->setInputCloud(cptr);
         octree->defineBoundingBox();
         octree->addPointsFromInputCloud();
@@ -355,10 +366,6 @@ Eigen::Affine3f PointCloud::modelview() {
     Translation3f tr(sensor_origin_.x(), sensor_origin_.y(), sensor_origin_.z());
 
     AngleAxis<float> rotation(-M_PI/2, Vector3f::UnitX());
-//    if(frame_ == CoordinateFrame::Camera){
-//        rotation = AngleAxis<float>(-M_PI/2, Vector3f(0, 0, 1));
-//    }
-
     return  rotation * sensor_orientation_ * tr * Affine3f::Identity();
 }
 

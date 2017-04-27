@@ -14,9 +14,9 @@
 class MinCut
 {
 public:
-    typedef pcl::search::Search <pcl::PointXYZI> KdTree;
+    typedef pcl::search::Search <pcl::PointXYZRGB> KdTree;
     typedef  KdTree::Ptr KdTreePtr;
-    typedef pcl::PointCloud< pcl::PointXYZI > PointCloud;
+    typedef pcl::PointCloud< pcl::PointXYZRGB > PointCloud;
     typedef  PointCloud::ConstPtr PointCloudConstPtr;
 
 

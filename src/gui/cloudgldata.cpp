@@ -19,7 +19,7 @@ CloudGLData::CloudGLData(boost::shared_ptr<PointCloud> pc) {
     point_buffer_->setUsagePattern(QGLBuffer::StreamDraw);
     point_buffer_->create(); CE();
     point_buffer_->bind(); CE();
-    size_t vb_size = sizeof(pcl::PointXYZI)*pc->size();
+    size_t vb_size = sizeof(pcl::PointXYZRGB)*pc->size();
     point_buffer_->allocate(vb_size); CE();
     point_buffer_->release(); CE();
     //
@@ -107,7 +107,7 @@ void CloudGLData::setVAO(GLuint vao){
 
 void CloudGLData::copyCloud(){
     point_buffer_->bind(); CE();
-    size_t vb_size = sizeof(pcl::PointXYZI)*pc_->size();
+    size_t vb_size = sizeof(pcl::PointXYZRGB)*pc_->size();
     point_buffer_->allocate(vb_size); CE();
     float * pointbuff =
             static_cast<float *>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY)); CE();
@@ -116,14 +116,14 @@ void CloudGLData::copyCloud(){
         pointbuff[i*4] = (*pc_)[i].x;
         pointbuff[i*4+1] = (*pc_)[i].y;
         pointbuff[i*4+2] = (*pc_)[i].z;
-        pointbuff[i*4+3] = (*pc_)[i].intensity;
+        pointbuff[i*4+3] = (*pc_)[i].data[3];
     }
 
     glUnmapBuffer(GL_ARRAY_BUFFER);
 
 //    for(uint i = 0; i < pc_->size(); i++) {
 //        point_buffer_->write(i*sizeof(float)*4, (*pc_)[i].data, sizeof(float)*3);
-//        point_buffer_->write(i*sizeof(float)*4, &((*pc_)[i].intensity), sizeof(float));
+//        point_buffer_->write(i*sizeof(float)*4, &((*pc_)[i].a), sizeof(float));
 //    }
 
     point_buffer_->release(); CE();

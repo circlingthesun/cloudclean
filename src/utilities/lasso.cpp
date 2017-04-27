@@ -222,7 +222,7 @@ std::vector<Eigen::Vector2f> Lasso::getPoints() {
 
 void Lasso::getIndices(Eigen::Affine3f & proj,
                         Eigen::Affine3f & mv,
-                pcl::PointCloud<pcl::PointXYZI> * cloud,
+                pcl::PointCloud<pcl::PointXYZRGB> * cloud,
                 boost::shared_ptr<std::vector<int> > source_indices){
 
     Eigen::Affine3f ndc_mat = proj * mv;
@@ -240,7 +240,7 @@ void Lasso::getIndices(Eigen::Affine3f & proj,
 
     int view [4] = {0, 0, 1000, 1000};
 
-    auto inside_lasso = [&] (pcl::PointXYZI & p) {
+    auto inside_lasso = [&] (pcl::PointXYZRGB & p) {
         /// project point
         Eigen::Vector4f p_4 = p.getVector4fMap();
         p_4 = ndc_mat.matrix() * p_4;

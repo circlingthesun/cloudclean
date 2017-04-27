@@ -125,7 +125,7 @@ void OutlierFilter::filter() {
 
     // downsample
     std::vector<int> big_to_small;
-    pcl::PointCloud<pcl::PointXYZI>::Ptr smallcloud = octreeDownsample(cloud.get(), (radius_*2)/100, big_to_small);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr smallcloud = octreeDownsample(cloud.get(), (radius_*2)/100, big_to_small);
 
     // create small to big map
     std::vector<std::vector<int>> small_to_big(smallcloud->size());
@@ -146,7 +146,7 @@ void OutlierFilter::filter() {
         }
     }
 
-//    pcl::KdTreeFLANN<pcl::PointXYZI> search;
+//    pcl::KdTreeFLANN<pcl::PointXYZRGB> search;
 //    search.setInputCloud(cloud);
 
     qDebug() << "radius:" << radius_;

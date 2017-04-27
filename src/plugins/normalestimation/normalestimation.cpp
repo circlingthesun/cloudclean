@@ -425,7 +425,7 @@ NormalEstimator::estimateNormals(boost::shared_ptr<PointCloud> cloud) {
 
     // Deal with missing normals here
 
-    pcl::KdTreeFLANN<pcl::PointXYZI> search;
+    pcl::KdTreeFLANN<pcl::PointXYZRGB> search;
     search.setInputCloud(cloud);
     int k = 50;
 

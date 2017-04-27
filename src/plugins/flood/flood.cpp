@@ -264,7 +264,7 @@ void Flood::flood(int source_idx){
         pcl::PointCloud<pcl::Normal>::Ptr normals = ne_->getNormals(cl_->active_);
 
         // zip and downsample
-        pcl::PointCloud<pcl::PointXYZINormal>::Ptr smallcloud = zipNormals(cl_->active_, normals);
+        pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr smallcloud = zipNormals(cl_->active_, normals);
         std::vector<int> & big_to_small = cache2_[cl_->active_];
         cache_[cl_->active_] = octreeDownsample(smallcloud.get(), 0.01, big_to_small);
 
@@ -277,7 +277,7 @@ void Flood::flood(int source_idx){
         }
     }
 
-    pcl::PointCloud<pcl::PointXYZINormal>::Ptr smallcloud = cache_[cl_->active_];
+    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr smallcloud = cache_[cl_->active_];
     std::vector<int> & big_to_small = cache2_[cl_->active_];
     std::vector<std::vector<int>> & small_to_big = cache3_[cl_->active_];
 
@@ -286,12 +286,12 @@ void Flood::flood(int source_idx){
     for(int big_idx = 0; big_idx < normals->size(); ++big_idx){
         int small_idx = big_to_small[big_idx];
         pcl::Normal & n = normals->points[big_idx];
-        pcl::PointXYZINormal & pn = smallcloud->points[small_idx];
+        pcl::PointXYZRGBNormal & pn = smallcloud->points[small_idx];
         n.getNormalVector4fMap() = pn.getNormalVector4fMap();
     }
 */
 
-    pcl::PointXYZINormal & n = (*smallcloud)[big_to_small[source_idx]];
+    pcl::PointXYZRGBNormal & n = (*smallcloud)[big_to_small[source_idx]];
     Eigen::Map<Eigen::Vector3f> source_normal(&n.normal_x);
 
     qDebug() << "Source normal: " << source_normal.x() << source_normal.y() << source_normal.z();
@@ -303,7 +303,7 @@ void Flood::flood(int source_idx){
     //boost::shared_ptr<std::vector<int> > indices = getLayerIndices();
 
     //Octree search = *(cl_->active_->octree());
-    pcl::KdTreeFLANN<pcl::PointXYZINormal> search;
+    pcl::KdTreeFLANN<pcl::PointXYZRGBNormal> search;
     search.setInputCloud(smallcloud);
 
     std::set<int> visited;
@@ -327,7 +327,7 @@ void Flood::flood(int source_idx){
             search.nearestKSearch(current_idx, k_, idxs, dists);
 
         for (int idx : idxs) {
-            pcl::PointXYZINormal & n = (*smallcloud)[idx];
+            pcl::PointXYZRGBNormal & n = (*smallcloud)[idx];
             Eigen::Map<Eigen::Vector3f> normal(&n.normal_x);
 
             float dist = (normal-source_normal).norm();
@@ -383,14 +383,14 @@ void Flood::global_flood(){
     pcl::PointCloud<pcl::Normal>::Ptr normals = ne_->getNormals(cl_->active_);
 
     // zip and downsample
-	pcl::PointCloud<pcl::PointXYZI>::Ptr ptr(cl_->active_.get(), boost::serialization::null_deleter());
-    pcl::PointCloud<pcl::PointXYZINormal>::Ptr smallcloud = zipNormals(ptr, normals);
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr ptr(cl_->active_.get(), boost::serialization::null_deleter());
+    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr smallcloud = zipNormals(ptr, normals);
     std::vector<int> big_to_small;
     smallcloud = octreeDownsample(smallcloud.get(), 0.05, big_to_small);
 
-    pcl::search::Search<pcl::PointXYZINormal>::Ptr tree = boost::shared_ptr<pcl::search::Search<pcl::PointXYZINormal> > (new pcl::search::KdTree<pcl::PointXYZINormal>);
+    pcl::search::Search<pcl::PointXYZRGBNormal>::Ptr tree = boost::shared_ptr<pcl::search::Search<pcl::PointXYZRGBNormal> > (new pcl::search::KdTree<pcl::PointXYZRGBNormal>);
 
-    pcl::RegionGrowing<pcl::PointXYZINormal, pcl::PointXYZINormal> reg;
+    pcl::RegionGrowing<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal> reg;
     reg.setMinClusterSize (1000);
     reg.setMaxClusterSize (10000000);
     reg.setSearchMethod (tree);
@@ -445,8 +445,8 @@ void Flood::global_flood2(){
     pcl::PointCloud<pcl::Normal>::Ptr normals = ne_->getNormals(cl_->active_);
 
     // zip and downsample
-	pcl::PointCloud<pcl::PointXYZI>::Ptr ptr(cl_->active_.get(), boost::serialization::null_deleter());
-    pcl::PointCloud<pcl::PointXYZINormal>::Ptr smallcloud = zipNormals(ptr, normals);
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr ptr(cl_->active_.get(), boost::serialization::null_deleter());
+    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr smallcloud = zipNormals(ptr, normals);
     std::vector<int> big_to_small;
     smallcloud = octreeDownsample(smallcloud.get(), subsample_density, big_to_small);
 
@@ -462,12 +462,12 @@ void Flood::global_flood2(){
 
 
     // Setup the principal curvatures computation
-    pcl::PrincipalCurvaturesEstimation<pcl::PointXYZINormal, pcl::PointXYZINormal, pcl::PrincipalCurvatures> principal_curvatures_estimation;
+    pcl::PrincipalCurvaturesEstimation<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal, pcl::PrincipalCurvatures> principal_curvatures_estimation;
 
     principal_curvatures_estimation.setInputCloud (smallcloud);
     principal_curvatures_estimation.setInputNormals (smallcloud);
 
-    pcl::search::KdTree<pcl::PointXYZINormal>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZINormal>);
+    pcl::search::KdTree<pcl::PointXYZRGBNormal>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZRGBNormal>);
     principal_curvatures_estimation.setSearchMethod (tree);
     principal_curvatures_estimation.setRadiusSearch (0.5);
 
@@ -517,7 +517,7 @@ void Flood::global_flood2(){
     // keep track of points that are in regions already
     std::set<int> seen;
 
-    pcl::KdTreeFLANN<pcl::PointXYZINormal> search;
+    pcl::KdTreeFLANN<pcl::PointXYZRGBNormal> search;
     search.setInputCloud(smallcloud);
 
     auto fill = [&] (int source_idx) {
@@ -594,7 +594,7 @@ void Flood::global_flood2(){
         // Remove the regoin if it doesnt look planar
 
 
-        pcl::PCA<pcl::PointXYZINormal> pcEstimator(true);
+        pcl::PCA<pcl::PointXYZRGBNormal> pcEstimator(true);
         pcEstimator.setInputCloud(smallcloud);
 
         pcEstimator.setIndices(boost::shared_ptr<std::vector<int>>(&region, boost::serialization::null_deleter()));

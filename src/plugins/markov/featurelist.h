@@ -70,9 +70,9 @@ class FeatureList : public QAbstractListModel {
         Feature("X", 0),
         Feature("Y", 1),
         Feature("Z", 2),
-        Feature("X Normal", 3, false),
-        Feature("Y Normal", 4, false),
-        Feature("Z Normal", 5, false),
+        Feature("X Normal", 3),
+        Feature("Y Normal", 4),
+        Feature("Z Normal", 5),
         Feature("Intensity", 6),
         Feature("Eigen 1", 7, false),
         Feature("Eigen 2", 8, false),
@@ -88,6 +88,9 @@ class FeatureList : public QAbstractListModel {
         Feature("Eigenentrophy", 18, false),
         Feature("Distance from origin", 19, false),
         Feature("Number of neighbours", 20, false),
+        Feature("R", 21),
+        Feature("G", 22),
+        Feature("B", 23)
     };
  signals:
 

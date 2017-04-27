@@ -14,9 +14,9 @@
 class MinCut
 {
 public:
-    typedef pcl::search::Search <pcl::PointXYZI> KdTree;
+    typedef pcl::search::Search <pcl::PointXYZRGB> KdTree;
     typedef  KdTree::Ptr KdTreePtr;
-    typedef pcl::PointCloud< pcl::PointXYZI > PointCloud;
+    typedef pcl::PointCloud< pcl::PointXYZRGB > PointCloud;
     typedef  PointCloud::ConstPtr PointCloudConstPtr;
 
 
@@ -125,24 +125,24 @@ public:
     setNumberOfNeighbours (unsigned int neighbour_number);
 
     /** \brief Returns the points that must belong to foreground. */
-    std::vector<pcl::PointXYZI, Eigen::aligned_allocator<pcl::PointXYZI> >
+    std::vector<pcl::PointXYZRGB, Eigen::aligned_allocator<pcl::PointXYZRGB> >
     getForegroundPoints () const;
 
     /** \brief Allows to specify points which are known to be the points of the object.
     * \param[in] foreground_points point cloud that contains foreground points. At least one point must be specified.
     */
     void
-    setForegroundPoints ( pcl::PointCloud<pcl::PointXYZI>::Ptr foreground_points);
+    setForegroundPoints ( pcl::PointCloud<pcl::PointXYZRGB>::Ptr foreground_points);
 
     /** \brief Returns the points that must belong to background. */
-    std::vector<pcl::PointXYZI, Eigen::aligned_allocator<pcl::PointXYZI> >
+    std::vector<pcl::PointXYZRGB, Eigen::aligned_allocator<pcl::PointXYZRGB> >
     getBackgroundPoints () const;
 
     /** \brief Allows to specify points which are known to be the points of the background.
     * \param[in] background_points point cloud that contains background points.
     */
     void
-    setBackgroundPoints ( pcl::PointCloud<pcl::PointXYZI>::Ptr background_points);
+    setBackgroundPoints ( pcl::PointCloud<pcl::PointXYZRGB>::Ptr background_points);
 
     /** \brief This method launches the segmentation algorithm and returns the clusters that were
     * obtained during the segmentation. The indices of points that belong to the object will be stored
@@ -316,10 +316,10 @@ public:
     bool graph_is_valid_;
 
     /** \brief Stores the points that are known to be in the foreground. */
-    std::vector<pcl::PointXYZI, Eigen::aligned_allocator<pcl::PointXYZI> > foreground_points_;
+    std::vector<pcl::PointXYZRGB, Eigen::aligned_allocator<pcl::PointXYZRGB> > foreground_points_;
 
     /** \brief Stores the points that are known to be in the background. */
-    std::vector<pcl::PointXYZI, Eigen::aligned_allocator<pcl::PointXYZI> > background_points_;
+    std::vector<pcl::PointXYZRGB, Eigen::aligned_allocator<pcl::PointXYZRGB> > background_points_;
 
     /** \brief After the segmentation it will contain the segments. */
     std::vector <pcl::PointIndices> clusters_;

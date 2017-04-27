@@ -80,7 +80,7 @@ class Flood : public IPlugin {
 
     int k_;
 
-    std::map<boost::shared_ptr<PointCloud>, pcl::PointCloud<pcl::PointXYZINormal>::Ptr> cache_;
+    std::map<boost::shared_ptr<PointCloud>, pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr> cache_;
     std::map<boost::shared_ptr<PointCloud>, std::vector<int>> cache2_;
     std::map<boost::shared_ptr<PointCloud>, std::vector<std::vector<int>>> cache3_;
 };

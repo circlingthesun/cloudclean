@@ -147,7 +147,7 @@ void AutoTest::knntest() {
         std::vector<int> big_to_small;
 
         clock_t downsample_start = std::clock();
-        pcl::PointCloud<pcl::PointXYZI>::Ptr smallcloud_ = octreeDownsample(cloud.get(), voxel_size, big_to_small);
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr smallcloud_ = octreeDownsample(cloud.get(), voxel_size, big_to_small);
         double downsample_elapsed = double(std::clock() - downsample_start) / CLOCKS_PER_SEC;
 
         for(float nn_radius = 0; nn_radius <= 0.5; nn_radius+=0.05) {
@@ -157,8 +157,8 @@ void AutoTest::knntest() {
             clock_t nn_search_start = std::clock();
             double total = 0;
 
-            typename pcl::PointCloud<pcl::PointXYZI>::ConstPtr cptr(smallcloud_.get(), boost::serialization::null_deleter());
-            pcl::KdTreeFLANN<pcl::PointXYZI> search;
+            typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cptr(smallcloud_.get(), boost::serialization::null_deleter());
+            pcl::KdTreeFLANN<pcl::PointXYZRGB> search;
             search.setInputCloud(cptr);
 
             std::vector<float> kDist;
