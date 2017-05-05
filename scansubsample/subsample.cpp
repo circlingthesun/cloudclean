@@ -123,10 +123,11 @@ void resize_ptx(const char* filename, const char* out_filename, int factor, bool
     const int status_interval = width*height/100;
 
     for(int i = 1; i < width*height; i++){
-        ptx_file >> x >> y >> z >> intensity;
 
         if(tokens == 7){
-        	ptx_file >> r >> g >> b;
+            ptx_file >> x >> y >> z >> intensity >> r >> g >> b;
+        } else {
+            ptx_file >> x >> y >> z >> intensity;
         }
 
         if(i % status_interval == 0){
@@ -144,7 +145,7 @@ void resize_ptx(const char* filename, const char* out_filename, int factor, bool
 		// WRITE OUT
 
 		if(tokens == 7){
-			out_ptx_file << x << " " << y << " " << z << " " << intensity << r << " " << g << " " << b << " " << std::endl;
+			out_ptx_file << x << " " << y << " " << z << " " << intensity << " " << r << " " << g << " " << b << std::endl;
 		} else {
 			out_ptx_file << x << " " << y << " " << z << " " << intensity << std::endl;
 		}
