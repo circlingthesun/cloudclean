@@ -4,6 +4,8 @@ layout(location = 0) in vec4 vertex;
 layout(location = 1) in float intensity;
 layout(location = 2) in int color_index;
 layout(location = 3) in int flags;
+layout(location = 4) in vec3 rgb;
+
 uniform samplerBuffer sampler;
 uniform mat4 projection;
 uniform mat4 modelview;
@@ -25,7 +27,8 @@ void main( void ) {
     vec4 layer_colour = texelFetch(sampler, color_index);
 
     // Adjust the colour intensity
-    colour = layer_colour * intensity;
+//    colour = layer_colour * intensity;
+    colour = layer_colour * vec4(rgb, 1);
 
     int select_count = 0;
     vec4 select_colour = vec4(0.0f, 0.0f, 0.0f, 0.0f);

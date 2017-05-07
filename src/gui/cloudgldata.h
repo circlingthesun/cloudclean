@@ -35,6 +35,7 @@ class GUI_API CloudGLData : public QObject{
     boost::shared_ptr<PointCloud> pc_;
     std::unique_ptr<QGLBuffer> label_buffer_;
     std::unique_ptr<QGLBuffer> point_buffer_;
+    std::unique_ptr<QGLBuffer> color_buffer_;
     std::unique_ptr<QGLBuffer> flag_buffer_;
     std::unique_ptr<QGLBuffer> grid_buffer_;
 

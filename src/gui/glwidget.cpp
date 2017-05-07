@@ -248,6 +248,12 @@ void GLWidget::paintEvent(QPaintEvent *event) {
         glVertexAttribIPointer(3, 1, GL_BYTE, 0, 0); CE();
         cd->flag_buffer_->release(); CE();
 
+        // Color buffer
+        cd->color_buffer_->bind(); CE();
+        glEnableVertexAttribArray(4); CE();
+        glVertexAttribPointer(4, 3, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(uint8_t)*3, 0); CE();
+        cd->color_buffer_->release(); CE();
+
         glUniformMatrix4fv(uni_modelview_, 1, GL_FALSE,
                            (camera_.modelviewMatrix()*pc->modelview())
                            .data());CE();
@@ -259,9 +265,6 @@ void GLWidget::paintEvent(QPaintEvent *event) {
     camera_.alwaysUpdate(clouds_moving);
 
     glBindTexture(GL_TEXTURE_BUFFER, 0); CE();
-
-//    p.endNativePainting();
-//    p.end();
 
     emit pluginPaint(camera_.projectionMatrix(), camera_.modelviewMatrix());
     glFinish();

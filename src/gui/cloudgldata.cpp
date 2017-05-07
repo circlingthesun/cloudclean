@@ -19,9 +19,21 @@ CloudGLData::CloudGLData(boost::shared_ptr<PointCloud> pc) {
     point_buffer_->setUsagePattern(QGLBuffer::StreamDraw);
     point_buffer_->create(); CE();
     point_buffer_->bind(); CE();
-    size_t vb_size = sizeof(pcl::PointXYZRGB)*pc->size();
+    size_t vb_size = 4*4*pc->size();
     point_buffer_->allocate(vb_size); CE();
     point_buffer_->release(); CE();
+
+
+    // Color buffer setup
+
+    color_buffer_.reset(new QGLBuffer(QGLBuffer::VertexBuffer)); CE();
+    color_buffer_->setUsagePattern(QGLBuffer::StreamDraw);
+    color_buffer_->create(); CE();
+    color_buffer_->bind(); CE();
+    size_t cb_size = 3*pc->size();
+    color_buffer_->allocate(cb_size); CE();
+    color_buffer_->release(); CE();
+
     //
     // Label buffer setup
     //
@@ -69,45 +81,9 @@ CloudGLData::~CloudGLData() {
                this, SLOT(syncLabels(boost::shared_ptr<std::vector<int> >)));
 }
 
-/*
-void CloudGLData::setVAO(GLuint vao){
-    glBindVertexArray(vao);
-
-    // Point buffer
-    point_buffer_->bind(); CE();
-    glEnableVertexAttribArray(0); CE();
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*4, 0); CE();
-    glEnableVertexAttribArray(1); CE();
-    int offset = sizeof(float)*3;
-    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(float)*4,
-                          reinterpret_cast<const void *>(offset)); CE();
-    point_buffer_->release(); CE();
-
-    // Label buffer
-    label_buffer_->bind(); CE();
-    glEnableVertexAttribArray(2); CE(); CE();
-    glVertexAttribIPointer(2, 1, GL_SHORT, 0, 0); CE();
-    label_buffer_->release(); CE();
-
-    // Flag buffer
-    flag_buffer_->bind(); CE();
-    glEnableVertexAttribArray(3); CE();
-    glVertexAttribIPointer(3, 1, GL_BYTE, 0, 0); CE();
-    flag_buffer_->release(); CE();
-
-    // Grid pos buffer
-    grid_buffer_->bind(); CE();
-    glEnableVertexAttribArray(4); CE();
-    glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, 0, 0); CE();
-    grid_buffer_->release(); CE();
-
-    glBindVertexArray(0);
-}
-*/
-
 void CloudGLData::copyCloud(){
     point_buffer_->bind(); CE();
-    size_t vb_size = sizeof(pcl::PointXYZRGB)*pc_->size();
+    size_t vb_size = 4*4*pc_->size();
     point_buffer_->allocate(vb_size); CE();
     float * pointbuff =
             static_cast<float *>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY)); CE();
@@ -120,13 +96,24 @@ void CloudGLData::copyCloud(){
     }
 
     glUnmapBuffer(GL_ARRAY_BUFFER);
-
-//    for(uint i = 0; i < pc_->size(); i++) {
-//        point_buffer_->write(i*sizeof(float)*4, (*pc_)[i].data, sizeof(float)*3);
-//        point_buffer_->write(i*sizeof(float)*4, &((*pc_)[i].a), sizeof(float));
-//    }
-
     point_buffer_->release(); CE();
+
+
+    // Color data
+    color_buffer_->bind(); CE();
+    size_t cb_size = 3*pc_->size();
+    color_buffer_->allocate(cb_size); CE();
+    uint8_t * colorbuff =
+            static_cast<uint8_t *>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY)); CE();
+
+    for(uint i = 0; i < pc_->size(); i++) {
+        colorbuff[i*3] = (*pc_)[i].r;
+        colorbuff[i*3+1] = (*pc_)[i].g;
+        colorbuff[i*3+2] = (*pc_)[i].b;
+    }
+
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+    color_buffer_->release(); CE();
 }
 
 void CloudGLData::copyLabels(){

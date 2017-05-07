@@ -338,6 +338,12 @@ void FlatView::paintEvent(QPaintEvent *event) {
     glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0); CE();
     cd->grid_buffer_->release(); CE();
 
+    // Color buffer
+    cd->color_buffer_->bind(); CE();
+    glEnableVertexAttribArray(4); CE();
+    glVertexAttribPointer(4, 3, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(uint8_t)*3, 0); CE();
+    cd->color_buffer_->release(); CE();
+
     cd->draw(vao_); CE();
 
     glBindVertexArray(0); CE();
