@@ -238,13 +238,6 @@ bool PointCloud::load_ptx(const char* filename, int decimation_factor) {
         col = file_sample_idx % file_width;
         file_sample_idx++;
 
-        // Only process every decimation_factor-ith row and column
-//        if((row+1)%decimation_factor != 0 || (col+1)%decimation_factor != 0){
-//            qDebug() << "Skiped point";
-//            fgets(buff, 1024, pfile);
-//            continue;
-//        }
-
         if(ferror (pfile) || feof(pfile)){
             qDebug() << "File read fail at line " << file_sample_idx << "with sample idx:" << sampled_idx;
             return false;
@@ -256,6 +249,7 @@ bool PointCloud::load_ptx(const char* filename, int decimation_factor) {
             filled = fscanf(pfile, "%f %f %f %f %hhd %hhd %hhd", &x, &y, &z, &intensity, &r, &g, &b);
         } else {
             filled = fscanf(pfile, "%f %f %f %f", &x, &y, &z, &intensity);
+            r = intensity * 255, g = intensity * 255, b = intensity * 255;
         }
 
         if(filled != (has_rgb ? 7 : 4 )) {
