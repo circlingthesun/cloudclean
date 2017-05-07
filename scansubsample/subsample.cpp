@@ -17,7 +17,7 @@
 void resize_ptx(const char* filename, const char* out_filename, int factor, bool discard_reg = false){
     int width = -1;
     int height = -1;
-    float tmp;
+    std::string tmp;
     std::string tmp_str;
 
     // Makes things faster apparently
@@ -32,8 +32,6 @@ void resize_ptx(const char* filename, const char* out_filename, int factor, bool
     ptx_file >> height;
     out_ptx_file << width/factor << std::endl;
     out_ptx_file << height/factor << std::endl;
-
-   
 
     if (discard_reg) {
 
@@ -55,10 +53,9 @@ void resize_ptx(const char* filename, const char* out_filename, int factor, bool
     } else {
     
         // Camera offset
-
         for(int i = 0; i < 3; i++){
             ptx_file >> tmp;
-            out_ptx_file << tmp << (i == 2 ? "": " ");
+            out_ptx_file << tmp << (i == 3 ? "": " ");
         }
                 
 
@@ -91,18 +88,15 @@ void resize_ptx(const char* filename, const char* out_filename, int factor, bool
 
 	// Read points
 	std::string line;
-	float x, y, z, intensity;
-	int r, g, b;
+	std::string x, y, z, intensity;
+	std::string r, g, b;
 
     // Determine format
     getline( ptx_file, line);
     int tokens = 1;
-    for(int i = 0; i< line.length(); i++)
+    for(int i = 0; i< line.length(); i++){
         if(line[i] == ' ') tokens++;
-
-    // if(tokens == 7){
-    // 	printf("The scan has color but we are discarding the information.\n");
-    // }
+    }
 
     // Read first line
     std::stringstream ss(std::stringstream::in | std::stringstream::out);
@@ -112,7 +106,7 @@ void resize_ptx(const char* filename, const char* out_filename, int factor, bool
     if(tokens == 7){
     	ss >> r >> g >> b;
     	// Write first line
-    	out_ptx_file << x << " " << y << " " << z << " " << intensity << " " << r << " " << g << " " << b << " " << std::endl;
+    	out_ptx_file << x << " " << y << " " << z << " " << intensity << " " << r << " " << g << " " << b << std::endl;
     } else {
     	// Write first line
     	out_ptx_file << x << " " << y << " " << z << " " << intensity << std::endl;
