@@ -110,8 +110,12 @@ pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr octreeDownsample(
         p.z = z*=size_inv;
         p.data[3] = intensity*=size_inv;
         p.normal_x = nx*=size_inv;
-        p.normal_y = nx*=size_inv;
+        p.normal_y = ny*=size_inv;
         p.normal_z = nz*=size_inv;
+        float t = sqrt(nx*nx + ny*ny + nz*nz);
+        p.normal_x /= t;
+        p.normal_y /= t;
+        p.normal_z /= t;
         p.r = uint8_t(r*=size_inv);
         p.g = uint8_t(g*=size_inv);
         p.b = uint8_t(b*=size_inv);
