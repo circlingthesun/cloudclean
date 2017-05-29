@@ -13,7 +13,9 @@ pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr zipNormals(pcl::PointCloud<pcl::Poi
         pcl::PointXYZRGBNormal & pn = (*zipped)[i];
         pn.getNormalVector4fMap() = n.getNormalVector4fMap();
         pn.getVector4fMap() = p.getVector4fMap();
-        pn.data[3] = p.data[3];
+        pn.r = p.r;
+        pn.g = p.g;
+        pn.b = p.b;
     }
 
     return zipped;
